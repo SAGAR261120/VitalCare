@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VitalCare
 
 A premium, enterprise-grade healthcare Android application built with React Native CLI.
@@ -44,3 +45,6 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed documentation on project s
 - React Hook Form + Zod
 - React Native Reanimated
 - Axios + MMKV + Keychain
+=======
+# VitalCare
+>>>>>>> f3fb046c5ddd5d2accd8dd37e69facf31c300421
