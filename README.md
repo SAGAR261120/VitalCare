@@ -1,50 +1,137 @@
-<<<<<<< HEAD
-# VitalCare
+# VitalCare — Full-Stack Healthcare Platform
 
-A premium, enterprise-grade healthcare Android application built with React Native CLI.
+Enterprise-grade healthcare platform with Android mobile app, web admin panel, and Node.js API.
 
-## Features
-
-- Animated splash screen and onboarding flow
-- OTP and password authentication with form validation
-- Multi-role registration (Patient, Doctor, Hospital, Yoga Teacher, Blood Bank)
-- Premium dashboard with health packages, care team, and quick actions
-- Custom animated bottom tab navigation with center FAB
-- Drawer navigation for services and account management
-- Membership plans and insurance comparison screens
-- Rewards and points system
-- Dark mode / Light mode support
-- Offline detection with banner notification
-- Secure token storage (Keychain) and fast local storage (MMKV)
-- API-ready architecture with Axios interceptors
-
-## Quick Start
-
-```bash
-npm install
-npm start
-npm run android
-```
-
-## Project Location
+## Project Structure
 
 ```
-C:\Users\Sagar\.cursor\projects\C-Users-Sagar-AppData-Local-Temp-472f5ee8-75fe-4515-87da-10b3a04d16c9\VitalCare
+VitalCare/
+├── android-app/       # React Native CLI (Android)
+├── admin-panel/       # React + TypeScript Admin Dashboard
+├── backend-nodejs/    # Node.js + Express + MongoDB API
+├── docs/              # Documentation
+└── README.md
 ```
-
-## Architecture
-
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed documentation on project structure, design system, navigation flow, and API integration.
 
 ## Tech Stack
 
-- React Native CLI 0.85.3
-- TypeScript
-- React Navigation v7
-- Zustand
-- React Hook Form + Zod
-- React Native Reanimated
-- Axios + MMKV + Keychain
-=======
-# VitalCare
->>>>>>> f3fb046c5ddd5d2accd8dd37e69facf31c300421
+| Component | Technologies |
+|-----------|-------------|
+| Mobile App | React Native CLI, TypeScript, Zustand, React Navigation, Reanimated |
+| Admin Panel | React, TypeScript, Material UI, Redux Toolkit, React Query, Recharts |
+| Backend | Node.js, Express, MongoDB, Mongoose, JWT, Socket.IO, Winston |
+
+## Prerequisites
+
+- Node.js 22+
+- MongoDB (local or Atlas)
+- Android Studio (for mobile app)
+- JDK 17+
+
+## Quick Start
+
+### 1. Backend API
+
+```bash
+cd backend-nodejs
+cp .env.example .env
+npm install
+npm run seed    # Seed test users
+npm run dev     # Start on http://localhost:5000
+```
+
+### 2. Admin Panel
+
+```bash
+cd admin-panel
+npm install
+npm run dev     # Start on http://localhost:5173
+```
+
+Login with: `admin@test.com` / `Admin@123`
+
+### 3. Android App
+
+```bash
+cd android-app
+npm install
+npm start       # Metro bundler
+npm run android # Build & run on emulator/device
+```
+
+> Android emulator connects to API via `10.0.2.2:5000`
+
+## Seed Users
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | superadmin@test.com | SuperAdmin@123 |
+| Admin | admin@test.com | Admin@123 |
+| Test User | user@test.com | User@123 |
+
+## Features
+
+### Mobile App
+- Splash, Onboarding, Login, Register, OTP, Forgot Password
+- Profile management, Dashboard, Notifications, Settings
+- Dark/Light theme, Offline detection, Secure token storage
+
+### Admin Panel
+- Dashboard with analytics charts
+- User management (CRUD, search, filter, pagination)
+- Admin management with permissions (Super Admin)
+- Push notifications & broadcast messages
+- Profile, application, and theme settings
+
+### Backend API
+- JWT + Refresh token authentication
+- Role-based access control (RBAC)
+- Password encryption (bcrypt)
+- REST API with validation middleware
+- Socket.IO real-time notifications
+- File upload support
+- Activity logging
+
+## API Documentation
+
+See [docs/API.md](./docs/API.md) for complete endpoint reference.
+
+## Architecture
+
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed architecture documentation.
+
+## Environment Variables
+
+### Backend (`backend-nodejs/.env`)
+```
+MONGODB_URI=mongodb://localhost:27017/vitalcare
+JWT_SECRET=your-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+PORT=5000
+```
+
+### Admin Panel (`admin-panel/.env`)
+```
+VITE_API_URL=http://localhost:5000/api/v1
+```
+
+## Development
+
+Run all three services in separate terminals:
+
+```bash
+# Terminal 1 - Backend
+cd backend-nodejs && npm run dev
+
+# Terminal 2 - Admin Panel
+cd admin-panel && npm run dev
+
+# Terminal 3 - Mobile App
+cd android-app && npm start
+# Terminal 4 - Android build
+cd android-app && npm run android
+```
+
+## License
+
+MIT
