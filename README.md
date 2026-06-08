@@ -1,136 +1,106 @@
 # VitalCare — Full-Stack Healthcare Platform
 
-Enterprise-grade healthcare platform with Android mobile app, web admin panel, and Node.js API.
+Enterprise-grade healthcare ecosystem with **fully dynamic, API-driven content** — no hardcoded data in mobile or admin UI.
 
 ## Project Structure
 
 ```
 VitalCare/
-├── android-app/       # React Native CLI (Android)
-├── admin-panel/       # React + TypeScript Admin Dashboard
-├── backend-nodejs/    # Node.js + Express + MongoDB API
-├── docs/              # Documentation
-└── README.md
+├── android-app/        # React Native CLI mobile app
+├── admin-panel/        # React + TypeScript admin dashboard
+├── backend-nodejs/     # Node.js + Express + MongoDB API
+├── database-seed/      # Comprehensive seed scripts
+├── documentation/      # Platform documentation
+└── docs/               # Legacy API docs
 ```
-
-## Tech Stack
-
-| Component | Technologies |
-|-----------|-------------|
-| Mobile App | React Native CLI, TypeScript, Zustand, React Navigation, Reanimated |
-| Admin Panel | React, TypeScript, Material UI, Redux Toolkit, React Query, Recharts |
-| Backend | Node.js, Express, MongoDB, Mongoose, JWT, Socket.IO, Winston |
 
 ## Prerequisites
 
-- Node.js 22+
+- Node.js 20+
 - MongoDB (local or Atlas)
-- Android Studio (for mobile app)
-- JDK 17+
+- Android Studio (for mobile)
 
 ## Quick Start
 
-### 1. Backend API
+### 1. Start MongoDB
+Ensure MongoDB is running on `mongodb://localhost:27017`
 
+### 2. Seed Database
 ```bash
-cd backend-nodejs
-cp .env.example .env
+cd database-seed
 npm install
-npm run seed    # Seed test users
-npm run dev     # Start on http://localhost:5000
+npm run seed          # First time
+npm run seed:reset    # Reset & re-seed all data
 ```
 
-### 2. Admin Panel
+### 3. Start Backend
+```bash
+cd backend-nodejs
+npm install
+npm run dev           # http://localhost:5000
+```
 
+### 4. Start Admin Panel
 ```bash
 cd admin-panel
 npm install
-npm run dev     # Start on http://localhost:5173
+npm run dev           # http://localhost:5173
 ```
 
-Login with: `admin@test.com` / `Admin@123`
-
-### 3. Android App
-
+### 5. Start Mobile App
 ```bash
 cd android-app
 npm install
-npm start       # Metro bundler
-npm run android # Build & run on emulator/device
+npm start             # Terminal 1 - Metro
+npm run android       # Terminal 2 - Build
 ```
 
-> Android emulator connects to API via `10.0.2.2:5000`
-
-## Seed Users
+## Seed Credentials
 
 | Role | Email | Password |
 |------|-------|----------|
 | Super Admin | superadmin@test.com | SuperAdmin@123 |
 | Admin | admin@test.com | Admin@123 |
-| Test User | user@test.com | User@123 |
+| User | user@test.com | User@123 |
 
-## Features
+Also seeds: 3 additional admins, 50 users, categories, banners, health packages, specialists, membership/insurance plans, rewards, FAQs, cities, notifications, activity logs.
 
-### Mobile App
-- Splash, Onboarding, Login, Register, OTP, Forgot Password
-- Profile management, Dashboard, Notifications, Settings
-- Dark/Light theme, Offline detection, Secure token storage
+## What's Dynamic
 
-### Admin Panel
-- Dashboard with analytics charts
-- User management (CRUD, search, filter, pagination)
-- Admin management with permissions (Super Admin)
-- Push notifications & broadcast messages
-- Profile, application, and theme settings
+Everything in the mobile app and admin panel is fetched from MongoDB via REST APIs:
 
-### Backend API
-- JWT + Refresh token authentication
-- Role-based access control (RBAC)
-- Password encryption (bcrypt)
-- REST API with validation middleware
-- Socket.IO real-time notifications
-- File upload support
-- Activity logging
+- Home banners, health packages, specialists, insurance
+- Onboarding slides, drawer menu items, app settings
+- Membership & insurance plans, reward tasks
+- Appointments, user rewards, activity history
+- Search results, support phone/WhatsApp numbers
+- Admin CMS for all content types
 
-## API Documentation
+## Admin Panel CMS
 
-See [docs/API.md](./docs/API.md) for complete endpoint reference.
+Manage content at:
+- `/content/banners` — Promotional banners
+- `/content/packages` — Health checkup packages
+- `/content/specialists` — Doctor profiles
+- `/content/membership` — Membership plans
+- `/content/insurance` — Insurance plans
+- `/content/categories` — Content categories
+- `/content/onboarding` — Onboarding slides
+- `/content/rewards` — Reward tasks
 
-## Architecture
+## Documentation
 
-See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for detailed architecture documentation.
+- [documentation/README.md](./documentation/README.md) — Architecture & modules
+- [documentation/API.md](./documentation/API.md) — Extended API reference
+- [docs/API.md](./docs/API.md) — Auth & user management APIs
 
-## Environment Variables
+## Tech Stack
 
-### Backend (`backend-nodejs/.env`)
-```
-MONGODB_URI=mongodb://localhost:27017/vitalcare
-JWT_SECRET=your-secret
-JWT_REFRESH_SECRET=your-refresh-secret
-PORT=5000
-```
-
-### Admin Panel (`admin-panel/.env`)
-```
-VITE_API_URL=http://localhost:5000/api/v1
-```
-
-## Development
-
-Run all three services in separate terminals:
-
-```bash
-# Terminal 1 - Backend
-cd backend-nodejs && npm run dev
-
-# Terminal 2 - Admin Panel
-cd admin-panel && npm run dev
-
-# Terminal 3 - Mobile App
-cd android-app && npm start
-# Terminal 4 - Android build
-cd android-app && npm run android
-```
+| Layer | Technologies |
+|-------|-------------|
+| Mobile | React Native CLI, TypeScript, Zustand, Reanimated, Axios, MMKV |
+| Admin | React, TypeScript, MUI, Redux Toolkit, React Query, Recharts |
+| Backend | Node.js, Express, MongoDB, Mongoose, JWT, Socket.IO, Winston |
 
 ## License
 

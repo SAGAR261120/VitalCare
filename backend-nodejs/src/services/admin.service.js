@@ -7,6 +7,9 @@ const DEFAULT_ADMIN_PERMISSIONS = [
   'users.write',
   'notifications.send',
   'dashboard.view',
+  'content.read',
+  'content.write',
+  'media.manage',
 ];
 
 const listAdmins = async ({ page = 1, limit = 10, search }) => {

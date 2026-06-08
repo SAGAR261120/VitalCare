@@ -17,20 +17,21 @@ import Animated, {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ONBOARDING_SLIDES } from '../../constants';
 import { Button } from '../../components/buttons/Button';
 import { Text } from '../../components/common/Text';
+import { Loader } from '../../components/common/Loader';
+import { useAppConfig, OnboardingSlide } from '../../hooks/useApi';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme';
 import { RootStackParamList } from '../../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type OnboardingSlide = (typeof ONBOARDING_SLIDES)[number];
+type OnboardingSlideItem = OnboardingSlide & { id: string };
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
 interface SlideItemProps {
-  item: OnboardingSlide;
+  item: OnboardingSlideItem;
   index: number;
   scrollX: SharedValue<number>;
 }
@@ -124,9 +125,11 @@ const PaginationDot: React.FC<DotProps> = ({ index, scrollX }) => {
 
 export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
+  const { data, loading } = useAppConfig();
+  const slides: OnboardingSlideItem[] = (data?.slides ?? []).map(s => ({ ...s, id: s._id }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useSharedValue(0);
-  const flatListRef = useRef<FlatList<OnboardingSlide>>(null);
+  const flatListRef = useRef<FlatList<OnboardingSlideItem>>(null);
   const completeOnboarding = useAuthStore(state => state.completeOnboarding);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -144,11 +147,8 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   ).current;
 
   const handleNext = () => {
-    if (currentIndex < ONBOARDING_SLIDES.length - 1) {
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
-        animated: true,
-      });
+    if (currentIndex < slides.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
     } else {
       completeOnboarding();
       navigation.replace('Auth');
@@ -160,15 +160,21 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
     navigation.replace('Auth');
   };
 
+  if (loading) return <Loader fullScreen message="Loading..." />;
+  if (slides.length === 0) {
+    handleSkip();
+    return null;
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.skipRow}>
         <Button title="Skip" variant="ghost" size="sm" onPress={handleSkip} />
       </View>
 
-      <FlatList<OnboardingSlide>
+      <FlatList<OnboardingSlideItem>
         ref={flatListRef}
-        data={[...ONBOARDING_SLIDES]}
+        data={slides}
         renderItem={({ item, index }) => (
           <SlideItem item={item} index={index} scrollX={scrollX} />
         )}
@@ -184,17 +190,12 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.footer}>
         <View style={styles.dots}>
-          {ONBOARDING_SLIDES.map((_, i) => (
+          {slides.map((_, i) => (
             <PaginationDot key={i} index={i} scrollX={scrollX} />
           ))}
         </View>
-
         <Button
-          title={
-            currentIndex === ONBOARDING_SLIDES.length - 1
-              ? 'Get Started'
-              : 'Continue'
-          }
+          title={currentIndex === slides.length - 1 ? 'Get Started' : 'Continue'}
           onPress={handleNext}
           fullWidth
           icon="arrow-forward"

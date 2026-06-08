@@ -5,7 +5,9 @@ interface AppStore {
   location: LocationData;
   searchQuery: string;
   notifications: number;
+  appSettings: Record<string, unknown>;
   setSearchQuery: (query: string) => void;
+  setAppSettings: (settings: Record<string, unknown>) => void;
   updateLocation: (location: Partial<LocationData>) => void;
   fetchLocation: () => Promise<void>;
 }
@@ -22,9 +24,11 @@ const defaultLocation: LocationData = {
 export const useAppStore = create<AppStore>((set, get) => ({
   location: defaultLocation,
   searchQuery: '',
-  notifications: 3,
+  notifications: 0,
+  appSettings: {},
 
   setSearchQuery: query => set({ searchQuery: query }),
+  setAppSettings: settings => set({ appSettings: settings }),
 
   updateLocation: location =>
     set(state => ({

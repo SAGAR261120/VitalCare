@@ -13,7 +13,7 @@ interface OtpInputProps {
 export const OtpInput: React.FC<OtpInputProps> = ({
   value,
   onChange,
-  length = 4,
+  length = 6,
   error = false,
 }) => {
   const theme = useTheme();

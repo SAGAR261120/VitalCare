@@ -119,6 +119,11 @@ export const Button: React.FC<ButtonProps> = ({
     </>
   );
 
+  const shadowStyle =
+    variant !== 'outline' && variant !== 'ghost' && !isDisabled
+      ? theme.shadows.sm
+      : {};
+
   const buttonStyle = [
     styles.button,
     {
@@ -129,7 +134,6 @@ export const Button: React.FC<ButtonProps> = ({
       borderWidth: variant === 'outline' ? 1.5 : 0,
       ...(fullWidth ? { alignSelf: 'stretch' as const } : {}),
     },
-    variant !== 'outline' && variant !== 'ghost' ? theme.shadows.md : {},
     style,
   ];
 
@@ -159,6 +163,7 @@ export const Button: React.FC<ButtonProps> = ({
               style={[
                 styles.inner,
                 { backgroundColor: theme.colors.primary },
+                shadowStyle,
               ]}>
               {content}
             </Animated.View>
@@ -168,6 +173,7 @@ export const Button: React.FC<ButtonProps> = ({
             style={[
               styles.inner,
               { backgroundColor: variantStyles.background },
+              variant !== 'outline' && variant !== 'ghost' && !isDisabled ? shadowStyle : {},
             ]}>
             {content}
           </Animated.View>
@@ -184,6 +190,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
   gradient: {
     flex: 1,

@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { APP_NAME } from '../../constants';
 import { Button } from '../../components/buttons/Button';
 import { GradientBackground } from '../../components/common/GradientBackground';
 import { GlassCard } from '../../components/common/GlassCard';
 import { Text } from '../../components/common/Text';
 import { TextInput } from '../../components/forms/TextInput';
 import { useAuthStore } from '../../store/authStore';
+import { useAppStore } from '../../store/appStore';
 import { AuthStackParamList } from '../../types';
 import { useTheme } from '../../theme';
 import { LoginFormData, loginSchema } from '../../utils/validation';
@@ -21,6 +21,8 @@ type LoginMethod = 'otp' | 'password';
 
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
+  const appSettings = useAppStore(s => s.appSettings);
+  const appName = (appSettings.app_name as string) || 'VitalCare';
   const [method, setMethod] = useState<LoginMethod>('otp');
   const [loading, setLoading] = useState(false);
   const sendOtp = useAuthStore(state => state.sendOtp);
@@ -44,6 +46,9 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       } else if (data.password) {
         await loginWithPassword(data.phone, data.password);
       }
+    } catch (err: unknown) {
+      const message = (err as { message?: string })?.message || 'Login failed. Check backend is running.';
+      Alert.alert('Login failed', message);
     } finally {
       setLoading(false);
     }
@@ -66,7 +71,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
               <Icon name="heart" size={24} color={theme.colors.primary} />
             </View>
             <Text variant="h2" color={theme.colors.text}>
-              {APP_NAME}
+              {appName}
             </Text>
           </View>
           <Text variant="body" color={theme.colors.textSecondary} align="center">

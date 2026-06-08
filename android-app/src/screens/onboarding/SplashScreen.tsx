@@ -9,9 +9,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { APP_NAME, APP_TAGLINE } from '../../constants';
 import { GradientBackground } from '../../components/common/GradientBackground';
 import { Text } from '../../components/common/Text';
+import { Loader } from '../../components/common/Loader';
+import { useAppConfig } from '../../hooks/useApi';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme';
 import { RootStackParamList } from '../../types';
@@ -20,8 +21,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 export const SplashScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
-  const { isLoading, hasCompletedOnboarding, isAuthenticated, initialize } =
-    useAuthStore();
+  const { data: configData } = useAppConfig();
+  const appName = (configData?.settings?.app_name as string) || 'VitalCare';
+  const appTagline = (configData?.settings?.app_tagline as string) || 'Your Health, Elevated';
+  const { isLoading, hasCompletedOnboarding, isAuthenticated, initialize } = useAuthStore();
   const logoScale = useSharedValue(0.3);
   const logoOpacity = useSharedValue(0);
   const textOpacity = useSharedValue(0);
@@ -94,14 +97,14 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
         </Animated.View>
         <Animated.View style={textStyle}>
           <Text variant="h1" color={theme.colors.white} align="center">
-            {APP_NAME}
+            {appName}
           </Text>
           <Text
             variant="body"
             color="rgba(255,255,255,0.88)"
             align="center"
             style={styles.tagline}>
-            {APP_TAGLINE}
+            {appTagline}
           </Text>
         </Animated.View>
       </Animated.View>

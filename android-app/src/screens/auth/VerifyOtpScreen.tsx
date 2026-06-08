@@ -106,6 +106,7 @@ export const VerifyOtpScreen: React.FC<Props> = ({ navigation, route }) => {
                 <OtpInput
                   value={value}
                   onChange={onChange}
+                  length={6}
                   error={!!errors.otp}
                 />
               )}

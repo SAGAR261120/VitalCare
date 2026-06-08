@@ -12,11 +12,16 @@ const PERMISSIONS = [
   'notifications.send',
   'settings.manage',
   'dashboard.view',
+  'content.read',
+  'content.write',
+  'content.delete',
+  'media.manage',
 ];
 
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true },
+    middleName: { type: String, trim: true },
     lastName: { type: String, required: true, trim: true },
     email: {
       type: String,
@@ -36,6 +41,9 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     avatar: { type: String },
     gender: { type: String },
+    dateOfBirth: { type: String },
+    age: { type: Number },
+    addressLine1: { type: String },
     pinCode: { type: String },
     state: { type: String },
     district: { type: String },
@@ -50,11 +58,14 @@ const userSchema = new mongoose.Schema(
     otp: { type: String, select: false },
     otpExpires: { type: Date, select: false },
     lastLogin: { type: Date },
+    rewardPoints: { type: Number, default: 0 },
+    membershipTier: { type: String, default: 'Bronze' },
+    walletAddress: { type: String },
+    referralCode: { type: String, unique: true, sparse: true },
   },
   { timestamps: true },
 );
 
-userSchema.index({ email: 1 });
 userSchema.index({ role: 1, isActive: 1 });
 userSchema.index({ createdAt: -1 });
 
@@ -72,6 +83,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
   return {
     id: this._id,
     firstName: this.firstName,
+    middleName: this.middleName,
     lastName: this.lastName,
     email: this.email,
     phone: this.phone,
@@ -80,11 +92,18 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     isActive: this.isActive,
     avatar: this.avatar,
     gender: this.gender,
+    dateOfBirth: this.dateOfBirth,
+    age: this.age,
+    addressLine1: this.addressLine1,
     pinCode: this.pinCode,
     state: this.state,
     district: this.district,
     city: this.city,
     profileRole: this.profileRole,
+    rewardPoints: this.rewardPoints,
+    membershipTier: this.membershipTier,
+    walletAddress: this.walletAddress,
+    referralCode: this.referralCode,
     lastLogin: this.lastLogin,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,

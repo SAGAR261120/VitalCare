@@ -20,6 +20,13 @@ interface ApiUser {
   avatar?: string;
 }
 
+const normalizePhone = (phone: string) => {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) return `+91${digits}`;
+  if (digits.startsWith('91') && digits.length === 12) return `+${digits}`;
+  return phone.startsWith('+') ? phone : `+${digits}`;
+};
+
 const mapUser = (apiUser: ApiUser): User => ({
   id: apiUser.id,
   firstName: apiUser.firstName,
@@ -108,12 +115,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   setPendingPhone: phone => set({ pendingPhone: phone }),
 
   sendOtp: async phone => {
-    await api.auth.sendOtp(phone);
-    set({ pendingPhone: phone });
+    const normalized = normalizePhone(phone);
+    await api.auth.sendOtp(normalized);
+    set({ pendingPhone: normalized });
   },
 
   verifyOtp: async (phone, otp) => {
-    const response = await api.auth.verifyOtp(phone, otp);
+    const response = await api.auth.verifyOtp(normalizePhone(phone), otp);
     const { token, refreshToken, user } = response.data.data as {
       token: string;
       refreshToken: string;
@@ -125,7 +133,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   loginWithPassword: async (phone, password) => {
-    const response = await api.auth.login(phone, password);
+    const response = await api.auth.login(normalizePhone(phone), password);
     const { token, refreshToken, user } = response.data.data as {
       token: string;
       refreshToken: string;
