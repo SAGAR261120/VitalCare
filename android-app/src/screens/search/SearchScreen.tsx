@@ -8,6 +8,7 @@ import { Loader } from '../../components/common/Loader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { api } from '../../services/api';
 import { useAppStore } from '../../store/appStore';
+import { SCREEN_GUTTER, getScrollBottomPadding } from '../../constants/layout';
 import { useTheme } from '../../theme';
 
 interface SearchResult {
@@ -55,7 +56,7 @@ export const SearchScreen: React.FC = () => {
   }, [searchQuery, search]);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer safeBottom={false} fabSafeArea tabBarSafeArea>
       <View style={styles.header}>
         <Text variant="h2">Search</Text>
         <SearchBar value={searchQuery} onChangeText={setSearchQuery} placeholder="Search packages, doctors, cities..." />
@@ -89,8 +90,8 @@ export const SearchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: 20, paddingTop: 8, gap: 16, marginBottom: 8 },
-  list: { paddingHorizontal: 20, paddingBottom: 100 },
+  header: { paddingHorizontal: SCREEN_GUTTER, paddingTop: 8, gap: 16, marginBottom: 8 },
+  list: { paddingHorizontal: SCREEN_GUTTER, paddingBottom: getScrollBottomPadding({ hasTabBar: true, hasFab: true, safeBottom: 0 }) },
   resultItem: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, borderWidth: 1, marginBottom: 10, gap: 12 },
   resultIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   resultContent: { flex: 1, gap: 2 },

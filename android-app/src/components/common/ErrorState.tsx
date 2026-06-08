@@ -5,36 +5,34 @@ import { Button } from '../buttons/Button';
 import { Text } from './Text';
 import { useTheme } from '../../theme';
 
-interface EmptyStateProps {
+interface ErrorStateProps {
   title?: string;
   description?: string;
-  icon?: string;
-  actionLabel?: string;
-  onAction?: () => void;
+  onRetry?: () => void;
+  retryLabel?: string;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({
-  title = 'No data found',
-  description = 'There is nothing to show here yet.',
-  icon = 'file-tray-outline',
-  actionLabel,
-  onAction,
+export const ErrorState: React.FC<ErrorStateProps> = ({
+  title = 'Something went wrong',
+  description = 'We could not load this content. Please try again.',
+  onRetry,
+  retryLabel = 'Try Again',
 }) => {
   const theme = useTheme();
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconWrap, { backgroundColor: `${theme.colors.primary}12` }]}>
-        <Icon name={icon} size={44} color={theme.colors.primary} />
+      <View style={[styles.iconWrap, { backgroundColor: `${theme.colors.error}15` }]}>
+        <Icon name="cloud-offline-outline" size={44} color={theme.colors.error} />
       </View>
-      <Text variant="h4" align="center" style={styles.title}>
+      <Text variant="h4" align="center">
         {title}
       </Text>
       <Text variant="body" color={theme.colors.textSecondary} align="center">
         {description}
       </Text>
-      {actionLabel && onAction && (
-        <Button title={actionLabel} onPress={onAction} variant="outline" style={styles.button} />
+      {onRetry && (
+        <Button title={retryLabel} onPress={onRetry} variant="outline" style={styles.button} />
       )}
     </View>
   );
@@ -55,9 +53,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
-  },
-  title: {
-    marginBottom: 4,
   },
   button: {
     marginTop: 8,

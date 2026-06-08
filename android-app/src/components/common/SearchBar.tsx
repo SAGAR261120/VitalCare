@@ -1,19 +1,23 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { SCREEN_GUTTER } from '../../constants/layout';
 import { useTheme } from '../../theme';
+import { spacing } from '../../theme/spacing';
 import { TextInput } from '../forms/TextInput';
 
 interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  onFilterPress?: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChangeText,
   placeholder = 'Search hospitals, doctors, packages...',
+  onFilterPress,
 }) => {
   const theme = useTheme();
 
@@ -29,13 +33,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         style={styles.input}
         accessibilityLabel="Search"
       />
-      <View
-        style={[
+      <Pressable
+        onPress={onFilterPress}
+        style={({ pressed }) => [
           styles.filterBtn,
-          { backgroundColor: theme.colors.primaryLight },
-        ]}>
+          {
+            backgroundColor: theme.colors.primaryLight,
+            opacity: pressed ? 0.85 : 1,
+          },
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel="Search filters">
         <Icon name="options-outline" size={20} color={theme.colors.primary} />
-      </View>
+      </Pressable>
     </View>
   );
 };
@@ -44,9 +54,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    gap: spacing['2.5'],
+    paddingHorizontal: SCREEN_GUTTER,
+    marginBottom: spacing['5'],
   },
   input: {
     flex: 1,
@@ -58,6 +68,5 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 0,
   },
 });

@@ -7,15 +7,19 @@ import { Text } from '../../components/common/Text';
 import { Loader } from '../../components/common/Loader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { api } from '../../services/api';
+import { SCREEN_GUTTER, getScrollBottomPadding } from '../../constants/layout';
 import { useTheme } from '../../theme';
 import type { Appointment } from '../../hooks/useApi';
 
-const STATUS_COLORS: Record<string, string> = {
-  upcoming: '#7C3AED', completed: '#10B981', cancelled: '#EF4444', pending: '#F59E0B',
-};
-
 export const AppointmentsScreen: React.FC = () => {
   const theme = useTheme();
+
+  const statusColors: Record<string, string> = {
+    upcoming: theme.colors.primary,
+    completed: theme.colors.success,
+    cancelled: theme.colors.error,
+    pending: theme.colors.warning,
+  };
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +38,7 @@ export const AppointmentsScreen: React.FC = () => {
   if (loading) return <Loader fullScreen message="Loading appointments..." />;
 
   return (
-    <ScreenContainer>
+    <ScreenContainer safeBottom={false} fabSafeArea tabBarSafeArea>
       <View style={styles.header}>
         <Text variant="h2">Appointments</Text>
         <Text variant="bodySmall" color={theme.colors.textSecondary}>Manage your health checkups</Text>
@@ -50,8 +54,8 @@ export const AppointmentsScreen: React.FC = () => {
             style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }, theme.shadows.sm]}>
             <View style={styles.cardHeader}>
               <Text variant="h4">{item.doctorName || 'Health Checkup'}</Text>
-              <View style={[styles.statusBadge, { backgroundColor: `${STATUS_COLORS[item.status] || '#7C3AED'}20` }]}>
-                <Text variant="caption" color={STATUS_COLORS[item.status] || theme.colors.primary}>{item.status}</Text>
+              <View style={[styles.statusBadge, { backgroundColor: `${statusColors[item.status] || theme.colors.primary}20` }]}>
+                <Text variant="caption" color={statusColors[item.status] || theme.colors.primary}>{item.status}</Text>
               </View>
             </View>
             {item.specialty && <Text variant="bodySmall" color={theme.colors.textSecondary}>{item.specialty}</Text>}
@@ -75,8 +79,8 @@ export const AppointmentsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: 20, paddingTop: 8, marginBottom: 20, gap: 4 },
-  list: { paddingHorizontal: 20, paddingBottom: 100 },
+  header: { paddingHorizontal: SCREEN_GUTTER, paddingTop: 8, marginBottom: 20, gap: 4 },
+  list: { paddingHorizontal: SCREEN_GUTTER, paddingBottom: getScrollBottomPadding({ hasTabBar: true, hasFab: true, safeBottom: 0 }) },
   emptyContainer: { flex: 1 },
   card: { borderRadius: 20, padding: 20, marginBottom: 12, borderWidth: 1, gap: 8 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

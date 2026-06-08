@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  RefreshControl,
+  RefreshControlProps,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -7,6 +9,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getScrollBottomPadding, SCREEN_GUTTER } from '../../constants/layout';
+import { spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme';
 import { OfflineBanner } from './OfflineBanner';
 
@@ -18,6 +22,12 @@ interface ScreenContainerProps {
   safeTop?: boolean;
   safeBottom?: boolean;
   backgroundColor?: string;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
+  /** Reserve space for FAB + tab bar in scroll content */
+  fabSafeArea?: boolean;
+  /** Reserve space for tab bar only */
+  tabBarSafeArea?: boolean;
+  horizontalPadding?: boolean;
 }
 
 export const ScreenContainer: React.FC<ScreenContainerProps> = ({
@@ -28,25 +38,48 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   safeTop = true,
   safeBottom = true,
   backgroundColor,
+  refreshControl,
+  fabSafeArea = false,
+  tabBarSafeArea = false,
+  horizontalPadding = false,
 }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const bg = backgroundColor ?? theme.colors.background;
 
+  const bottomInset = getScrollBottomPadding({
+    hasTabBar: tabBarSafeArea,
+    hasFab: fabSafeArea,
+    safeBottom: safeBottom ? insets.bottom : 0,
+  });
+
   const paddingStyle = {
     paddingTop: safeTop ? insets.top : 0,
-    paddingBottom: safeBottom ? insets.bottom : 0,
+  };
+
+  const scrollPadding = {
+    paddingBottom: bottomInset,
+    ...(horizontalPadding ? { paddingHorizontal: SCREEN_GUTTER } : null),
   };
 
   const content = scrollable ? (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={[styles.scrollContent, contentStyle]}
-      keyboardShouldPersistTaps="handled">
+      contentContainerStyle={[styles.scrollContent, scrollPadding, contentStyle]}
+      keyboardShouldPersistTaps="handled"
+      refreshControl={refreshControl}>
       {children}
     </ScrollView>
   ) : (
-    <View style={[styles.content, contentStyle]}>{children}</View>
+    <View
+      style={[
+        styles.content,
+        { paddingBottom: bottomInset },
+        horizontalPadding ? { paddingHorizontal: SCREEN_GUTTER } : null,
+        contentStyle,
+      ]}>
+      {children}
+    </View>
   );
 
   return (
@@ -70,6 +103,5 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 24,
   },
 });

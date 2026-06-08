@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { SCREEN_GUTTER } from '../../constants/layout';
+import { spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme';
 import { Text } from './Text';
 
@@ -38,7 +40,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
-    paddingHorizontal: 20,
+    marginTop: spacing['2'],
+    marginBottom: spacing['4'],
+    paddingHorizontal: SCREEN_GUTTER,
   },
 });

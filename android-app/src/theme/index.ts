@@ -34,8 +34,9 @@ export const useThemeStore = create<ThemeStore>(set => ({
     set({ mode });
   },
   initializeTheme: () => {
-    appStorage.setString(STORAGE_KEYS.THEME_MODE, 'light');
-    set({ mode: 'light' });
+    const saved = appStorage.getString(STORAGE_KEYS.THEME_MODE) as ThemeMode | undefined;
+    const mode = saved === 'dark' || saved === 'light' ? saved : 'light';
+    set({ mode });
   },
 }));
 

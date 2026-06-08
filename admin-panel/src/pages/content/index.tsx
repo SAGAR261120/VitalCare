@@ -2,10 +2,17 @@ import { ContentManagePage } from '../ContentManagePage';
 
 export const BannersPage = () => (
   <ContentManagePage title="Banners" resource="banners"
-    columns={[{ key: 'title', label: 'Title' }, { key: 'placement', label: 'Placement' }]}
+    columns={[
+      { key: 'image', label: 'Image', type: 'image' },
+      { key: 'title', label: 'Title' },
+      { key: 'placement', label: 'Placement' },
+    ]}
     fields={[
-      { key: 'title', label: 'Title' }, { key: 'subtitle', label: 'Subtitle' },
-      { key: 'placement', label: 'Placement (home/promo)' }, { key: 'sortOrder', label: 'Sort Order', type: 'number' },
+      { key: 'title', label: 'Title' },
+      { key: 'subtitle', label: 'Subtitle' },
+      { key: 'image', label: 'Banner Image', type: 'image' },
+      { key: 'placement', label: 'Placement (home/promo/onboarding)' },
+      { key: 'sortOrder', label: 'Sort Order', type: 'number' },
       { key: 'isActive', label: 'Active', type: 'boolean' },
     ]} />
 );

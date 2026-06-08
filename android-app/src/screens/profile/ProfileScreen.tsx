@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenContainer } from '../../components/common/ScreenContainer';
@@ -20,7 +20,7 @@ const MENU_SECTIONS = [
   {
     title: 'Preferences',
     items: [
-      { icon: 'sunny-outline', label: 'Light Mode' },
+      { icon: 'moon-outline', label: 'theme', isThemeToggle: true },
       { icon: 'notifications-outline', label: 'Notifications' },
       { icon: 'language-outline', label: 'Language' },
     ],
@@ -44,10 +44,8 @@ export const ProfileScreen: React.FC = () => {
     setMode(theme.isDark ? 'light' : 'dark');
   };
 
-  const isLightMode = !theme.isDark;
-
   return (
-    <ScreenContainer scrollable safeBottom={false}>
+    <ScreenContainer scrollable safeBottom={false} fabSafeArea tabBarSafeArea style={styles.screen}>
       <Animated.View
         entering={FadeInDown.duration(400)}
         style={[styles.profileCard, { backgroundColor: theme.colors.surface }, theme.shadows.md]}>
@@ -94,7 +92,20 @@ export const ProfileScreen: React.FC = () => {
               { backgroundColor: theme.colors.surface },
               theme.shadows.sm,
             ]}>
-            {section.items.map((item, iIndex) => (
+            {section.items.map((item, iIndex) => {
+              const isThemeToggle = 'isThemeToggle' in item && item.isThemeToggle;
+              const label = isThemeToggle
+                ? theme.isDark
+                  ? 'Dark Mode'
+                  : 'Light Mode'
+                : item.label;
+              const icon = isThemeToggle
+                ? theme.isDark
+                  ? 'moon'
+                  : 'sunny-outline'
+                : item.icon;
+
+              return (
               <TouchableOpacity
                 key={item.label}
                 style={[
@@ -104,23 +115,23 @@ export const ProfileScreen: React.FC = () => {
                     borderBottomColor: theme.colors.divider,
                   },
                 ]}
-                onPress={item.label === 'Light Mode' ? toggleTheme : undefined}
+                onPress={isThemeToggle ? toggleTheme : undefined}
                 accessibilityRole="button"
-                accessibilityLabel={item.label}>
+                accessibilityLabel={label}>
                 <Icon
-                  name={item.icon}
+                  name={icon}
                   size={22}
                   color={theme.colors.primary}
                 />
                 <Text variant="body" style={styles.menuLabel}>
-                  {item.label}
+                  {label}
                 </Text>
-                {item.label === 'Light Mode' ? (
+                {isThemeToggle ? (
                   <View
                     style={[
                       styles.toggle,
                       {
-                        backgroundColor: isLightMode
+                        backgroundColor: theme.isDark
                           ? theme.colors.primary
                           : theme.colors.border,
                       },
@@ -128,7 +139,8 @@ export const ProfileScreen: React.FC = () => {
                     <View
                       style={[
                         styles.toggleKnob,
-                        isLightMode && styles.toggleKnobActive,
+                        { backgroundColor: theme.colors.white },
+                        theme.isDark && styles.toggleKnobActive,
                       ]}
                     />
                   </View>
@@ -140,7 +152,7 @@ export const ProfileScreen: React.FC = () => {
                   />
                 )}
               </TouchableOpacity>
-            ))}
+            );})}
           </View>
         </Animated.View>
       ))}
@@ -153,12 +165,14 @@ export const ProfileScreen: React.FC = () => {
         icon="log-out-outline"
         style={styles.logoutBtn}
       />
-      <View style={styles.bottomSpacer} />
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   profileCard: {
     margin: 20,
     borderRadius: 24,
@@ -220,8 +234,6 @@ const styles = StyleSheet.create({
   logoutBtn: {
     marginHorizontal: 20,
     marginTop: 8,
-  },
-  bottomSpacer: {
-    height: 100,
+    marginBottom: 8,
   },
 });

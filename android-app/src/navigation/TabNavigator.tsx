@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   BottomTabBarProps,
   createBottomTabNavigator,
@@ -10,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { springConfig } from '../animations/config';
+import { TAB_BAR_HEIGHT } from '../constants/layout';
 import { AppointmentsScreen } from '../screens/appointments/AppointmentsScreen';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
@@ -22,11 +24,11 @@ import { Text } from '../components/common/Text';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const TAB_CONFIG = [
-  { name: 'Home' as const, icon: 'home', iconOutline: 'home-outline', component: HomeScreen },
-  { name: 'Appointments' as const, icon: 'calendar', iconOutline: 'calendar-outline', component: AppointmentsScreen },
-  { name: 'SearchTab' as const, icon: 'search', iconOutline: 'search-outline', component: SearchScreen, isCenter: true },
-  { name: 'Rewards' as const, icon: 'ribbon', iconOutline: 'ribbon-outline', component: RewardsScreen },
-  { name: 'Profile' as const, icon: 'person', iconOutline: 'person-outline', component: ProfileScreen },
+  { name: 'Home' as const, label: 'Home', icon: 'home', iconOutline: 'home-outline', component: HomeScreen },
+  { name: 'Appointments' as const, label: 'Visits', icon: 'calendar', iconOutline: 'calendar-outline', component: AppointmentsScreen },
+  { name: 'SearchTab' as const, label: 'Search', icon: 'search', iconOutline: 'search-outline', component: SearchScreen, isCenter: true },
+  { name: 'Rewards' as const, label: 'Rewards', icon: 'ribbon', iconOutline: 'ribbon-outline', component: RewardsScreen },
+  { name: 'Profile' as const, label: 'Profile', icon: 'person', iconOutline: 'person-outline', component: ProfileScreen },
 ];
 
 interface TabItemProps {
@@ -48,16 +50,16 @@ const TabItem: React.FC<TabItemProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { scale: withSpring(isFocused ? 1.1 : 1, springConfig) },
+      { scale: withSpring(isFocused ? 1.08 : 1, springConfig) },
     ],
   }));
 
-  const label = config?.name === 'SearchTab' ? 'Search' : config?.name ?? route.name;
+  const label = config?.label ?? route.name;
   const iconName = isFocused ? config?.icon : config?.iconOutline;
 
   if (isCenter) {
     return (
-      <Animated.View key={route.key} style={animatedStyle}>
+      <Animated.View key={route.key} style={[styles.centerTab, animatedStyle]}>
         <View
           onTouchEnd={onPress}
           style={[
@@ -70,6 +72,13 @@ const TabItem: React.FC<TabItemProps> = ({
           accessibilityState={{ selected: isFocused }}>
           <Icon name="search" size={26} color={theme.colors.white} />
         </View>
+        <Text
+          variant="caption"
+          numberOfLines={1}
+          color={isFocused ? theme.colors.primary : theme.colors.textTertiary}
+          style={styles.centerLabel}>
+          {label}
+        </Text>
       </Animated.View>
     );
   }
@@ -91,9 +100,13 @@ const TabItem: React.FC<TabItemProps> = ({
         />
         <Text
           variant="caption"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
           color={
             isFocused ? theme.colors.primary : theme.colors.textTertiary
-          }>
+          }
+          style={styles.tabLabel}>
           {label}
         </Text>
       </View>
@@ -106,6 +119,8 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const bottomPad = Math.max(insets.bottom, 8);
 
   return (
     <View
@@ -114,6 +129,8 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
         {
           backgroundColor: theme.colors.tabBar,
           borderTopColor: theme.colors.tabBarBorder,
+          paddingBottom: bottomPad,
+          height: TAB_BAR_HEIGHT + bottomPad - 8,
         },
         theme.shadows.sm,
       ]}>
@@ -164,22 +181,31 @@ export const TabNavigator: React.FC = () => {
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-around',
     paddingTop: 8,
-    paddingBottom: 8,
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     borderTopWidth: 1,
-    height: 72,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
+    minWidth: 0,
   },
   tabInner: {
     alignItems: 'center',
-    gap: 2,
+    gap: 3,
     paddingVertical: 4,
+    width: '100%',
+  },
+  tabLabel: {
+    textAlign: 'center',
+    maxWidth: '100%',
+  },
+  centerTab: {
+    flex: 1,
+    alignItems: 'center',
+    minWidth: 0,
   },
   centerButton: {
     width: 56,
@@ -187,6 +213,10 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -20,
+    marginTop: -22,
+  },
+  centerLabel: {
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

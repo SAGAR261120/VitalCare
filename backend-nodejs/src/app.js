@@ -10,6 +10,7 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+app.set('etag', false);
 app.use(helmet());
 app.use(cors({ origin: config.corsOrigin, credentials: true }));
 app.use(morgan(config.nodeEnv === 'production' ? 'combined' : 'dev'));

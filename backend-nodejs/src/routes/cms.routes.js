@@ -27,7 +27,7 @@ RESOURCES.forEach(resource => {
   router.patch(`${base}/:id/toggle`, requirePermission('content.write'), handlers.toggle);
 });
 
-router.post('/media/upload', requirePermission('media.manage'), upload.single('file'), (req, res) => {
+router.post('/media/upload', requirePermission('media.manage', 'content.write'), upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
   const url = `/uploads/${req.file.filename}`;
   res.json({ success: true, data: { url, filename: req.file.filename, mimetype: req.file.mimetype } });

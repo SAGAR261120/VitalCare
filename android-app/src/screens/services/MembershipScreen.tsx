@@ -6,6 +6,7 @@ import { Text } from '../../components/common/Text';
 import { Loader } from '../../components/common/Loader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { api } from '../../services/api';
+import { SCREEN_GUTTER } from '../../constants/layout';
 import { useTheme } from '../../theme';
 import type { MembershipPlan } from '../../hooks/useApi';
 
@@ -29,7 +30,7 @@ export const MembershipScreen: React.FC = () => {
   if (loading) return <Loader fullScreen message="Loading plans..." />;
 
   return (
-    <ScreenContainer scrollable refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}>
+    <ScreenContainer scrollable safeBottom={false} fabSafeArea refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={theme.colors.primary} />}>
       <View style={styles.header}>
         <Text variant="h2">Membership Plans</Text>
         <Text variant="bodySmall" color={theme.colors.textSecondary}>Choose the plan that fits your health goals</Text>
@@ -46,6 +47,6 @@ export const MembershipScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20, gap: 4 },
-  content: { paddingHorizontal: 20, paddingBottom: 40 },
+  header: { paddingHorizontal: SCREEN_GUTTER, paddingTop: 16, paddingBottom: 20, gap: 4 },
+  content: { paddingHorizontal: SCREEN_GUTTER },
 });

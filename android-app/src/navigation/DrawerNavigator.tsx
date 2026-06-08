@@ -13,6 +13,25 @@ import { useAuthStore } from '../store/authStore';
 import { useTheme } from '../theme';
 import { DrawerParamList } from '../types';
 import { TabNavigator } from './TabNavigator';
+import { MainShell } from '../components/common/MainShell';
+
+const TabNavigatorShell = () => (
+  <MainShell hasTabBar>
+    <TabNavigator />
+  </MainShell>
+);
+
+const MembershipWithFab = () => (
+  <MainShell hasTabBar={false}>
+    <MembershipScreen />
+  </MainShell>
+);
+
+const InsuranceWithFab = () => (
+  <MainShell hasTabBar={false}>
+    <InsuranceScreen />
+  </MainShell>
+);
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -134,9 +153,9 @@ export const DrawerNavigator: React.FC = () => {
         overlayColor: theme.colors.overlay,
         swipeEnabled: true,
       }}>
-      <Drawer.Screen name="MainTabs" component={TabNavigator} />
-      <Drawer.Screen name="Membership" component={MembershipScreen} />
-      <Drawer.Screen name="Insurance" component={InsuranceScreen} />
+      <Drawer.Screen name="MainTabs" component={TabNavigatorShell} />
+      <Drawer.Screen name="Membership" component={MembershipWithFab} />
+      <Drawer.Screen name="Insurance" component={InsuranceWithFab} />
     </Drawer.Navigator>
   );
 };

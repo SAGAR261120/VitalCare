@@ -1,33 +1,47 @@
-import { useCallback, useEffect, useState } from 'react';
-import { apiClient } from '../services/api';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { api } from '../services/api';
 
 interface UseApiOptions {
   immediate?: boolean;
 }
 
+type ApiResponse<T> = {
+  data?: {
+    data?: T;
+    success?: boolean;
+    message?: string;
+  };
+};
+
 export function useApi<T>(
-  fetcher: () => Promise<{ data: { data: T } }>,
+  fetcher: () => Promise<ApiResponse<T>>,
   options: UseApiOptions = { immediate: true },
 ) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(options.immediate !== false);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const fetcherRef = useRef(fetcher);
+  fetcherRef.current = fetcher;
 
   const fetch = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     setError(null);
     try {
-      const res = await fetcher();
-      setData(res.data.data);
+      const res = await fetcherRef.current();
+      const payload = res.data?.data;
+      if (payload == null) {
+        throw new Error('Empty response from server. Pull to refresh or retry.');
+      }
+      setData(payload);
     } catch (err: unknown) {
       setError((err as { message?: string })?.message || 'Failed to load data');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [fetcher]);
+  }, []);
 
   useEffect(() => {
     if (options.immediate !== false) fetch();
@@ -37,21 +51,23 @@ export function useApi<T>(
 }
 
 export function useHomeFeed() {
+  const fetchHome = useCallback(() => api.content.getHome(), []);
   return useApi<{
     banners: Banner[];
     packages: HealthPackage[];
     specialists: Specialist[];
     insurance: InsurancePlan[];
     settings: Record<string, unknown>;
-  }>(() => apiClient.get('/content/home'));
+  }>(fetchHome);
 }
 
 export function useAppConfig() {
+  const fetchConfig = useCallback(() => api.content.getConfig(), []);
   return useApi<{
     slides: OnboardingSlide[];
     menuItems: MenuItem[];
     settings: Record<string, unknown>;
-  }>(() => apiClient.get('/content/config'));
+  }>(fetchConfig);
 }
 
 export interface Banner {

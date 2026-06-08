@@ -9,12 +9,14 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EmptyState } from '../components/EmptyState';
+import { ImageUploadField } from '../components/ImageUploadField';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 import api from '../services/api';
 
 interface FieldConfig {
   key: string;
   label: string;
-  type?: 'text' | 'number' | 'boolean' | 'textarea';
+  type?: 'text' | 'number' | 'boolean' | 'textarea' | 'image';
   multiline?: boolean;
 }
 
@@ -22,7 +24,7 @@ interface ContentManagePageProps {
   title: string;
   resource: string;
   fields: FieldConfig[];
-  columns: { key: string; label: string }[];
+  columns: { key: string; label: string; type?: 'text' | 'image' }[];
 }
 
 export const ContentManagePage = ({ title, resource, fields, columns }: ContentManagePageProps) => {
@@ -99,7 +101,20 @@ export const ContentManagePage = ({ title, resource, fields, columns }: ContentM
                 <TableRow><TableCell colSpan={columns.length + 2}><EmptyState actionLabel="Add New" onAction={openCreate} /></TableCell></TableRow>
               ) : items.map((item: Record<string, unknown>) => (
                 <TableRow key={item._id as string} hover>
-                  {columns.map(c => <TableCell key={c.key}>{String(item[c.key] ?? '-')}</TableCell>)}
+                  {columns.map(c => (
+                    <TableCell key={c.key}>
+                      {c.type === 'image' && item[c.key] ? (
+                        <Box
+                          component="img"
+                          src={resolveMediaUrl(String(item[c.key]))}
+                          alt=""
+                          sx={{ width: 56, height: 36, objectFit: 'cover', borderRadius: 1 }}
+                        />
+                      ) : (
+                        String(item[c.key] ?? '-')
+                      )}
+                    </TableCell>
+                  ))}
                   <TableCell>
                     <Chip label={item.isActive ? 'Active' : 'Inactive'} color={item.isActive ? 'success' : 'default'} size="small"
                       onClick={() => toggleMutation.mutate(item._id as string)} />
@@ -119,10 +134,18 @@ export const ContentManagePage = ({ title, resource, fields, columns }: ContentM
         <DialogTitle>{editItem ? 'Edit' : 'Create'} {title.slice(0, -1)}</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-          {fields.map(f => f.type === 'boolean' ? (
+          {fields.map(f =>
+            f.type === 'boolean' ? (
             <FormControlLabel key={f.key} control={
               <Switch checked={!!form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.checked })} />
             } label={f.label} sx={{ display: 'block', my: 1 }} />
+          ) : f.type === 'image' ? (
+            <ImageUploadField
+              key={f.key}
+              label={f.label}
+              value={String(form[f.key] ?? '')}
+              onChange={url => setForm({ ...form, [f.key]: url })}
+            />
           ) : (
             <TextField key={f.key} fullWidth label={f.label} type={f.type === 'number' ? 'number' : 'text'}
               multiline={f.multiline} rows={f.multiline ? 3 : 1} margin="dense"
