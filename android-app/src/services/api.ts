@@ -7,6 +7,11 @@ import { API_CONFIG, STORAGE_KEYS } from '../constants';
 import { ApiError } from '../types';
 import { appStorage, secureStorage } from './storage';
 
+if (__DEV__) {
+  // eslint-disable-next-line no-console
+  console.log('[VitalCare] API base URL:', API_CONFIG.BASE_URL);
+}
+
 const createApiClient = (): AxiosInstance => {
   const client = axios.create({
     baseURL: API_CONFIG.BASE_URL,
@@ -42,7 +47,12 @@ const createApiClient = (): AxiosInstance => {
         }
       }
       const apiError: ApiError = {
-        message: error.response?.data?.message || error.message || 'An unexpected error occurred',
+        message:
+          error.response?.data?.message ||
+          (error.message === 'Network Error'
+            ? `Cannot reach server at ${API_CONFIG.BASE_URL}. Ensure the backend is running and your device is on the same Wi‑Fi network.`
+            : error.message) ||
+          'An unexpected error occurred',
         code: error.response?.data?.code,
         status: error.response?.status,
       };

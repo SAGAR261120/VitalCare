@@ -11,6 +11,7 @@ const {
   generateOTP,
   hashToken,
 } = require('../utils/tokenUtils');
+const { normalizePhone, buildPhoneQuery } = require('../utils/phoneUtils');
 
 const createTokens = async (user, req) => {
   const accessToken = generateAccessToken(user._id);
@@ -46,7 +47,7 @@ const register = async (data, req) => {
 };
 
 const login = async ({ email, phone, password }, req) => {
-  const query = email ? { email: email.toLowerCase() } : { phone };
+  const query = email ? { email: email.toLowerCase() } : buildPhoneQuery(phone);
   const user = await User.findOne(query).select('+password');
 
   if (!user || !(await user.comparePassword(password))) {
@@ -148,16 +149,17 @@ const changePassword = async (userId, currentPassword, newPassword, req) => {
 };
 
 const sendOtp = async (phone, req) => {
+  const normalizedPhone = normalizePhone(phone);
   const otp = generateOTP();
   const expires = new Date(Date.now() + config.otpExpiresMinutes * 60 * 1000);
 
-  let user = await User.findOne({ phone }).select('+otp +otpExpires');
+  let user = await User.findOne(buildPhoneQuery(normalizedPhone)).select('+otp +otpExpires');
   if (!user) {
     user = await User.create({
       firstName: 'User',
-      lastName: phone.slice(-4),
-      email: `${phone.replace(/\D/g, '')}@vitalcare.temp`,
-      phone,
+      lastName: normalizedPhone.slice(-4),
+      email: `${normalizedPhone.replace(/\D/g, '')}@vitalcare.temp`,
+      phone: normalizedPhone,
       password: generateRefreshToken(),
       role: 'user',
     });
@@ -168,12 +170,12 @@ const sendOtp = async (phone, req) => {
   user.otpExpires = expires;
   await user.save({ validateBeforeSave: false });
 
-  logger.info(`OTP for ${phone}: ${otp}`);
+  logger.info(`OTP for ${normalizedPhone}: ${otp}`);
   return { message: 'OTP sent successfully', ...(process.env.NODE_ENV === 'development' && { otp }) };
 };
 
 const verifyOtp = async (phone, otp, req) => {
-  const user = await User.findOne({ phone }).select('+otp +otpExpires');
+  const user = await User.findOne(buildPhoneQuery(normalizePhone(phone))).select('+otp +otpExpires');
   if (!user || user.otp !== otp || user.otpExpires < new Date()) {
     throw new AppError('Invalid or expired OTP', 400, 'INVALID_OTP');
   }

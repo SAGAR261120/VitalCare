@@ -1,6 +1,6 @@
-import { Platform } from 'react-native';
+import { getDevApiHost } from '../utils/devHost';
 
-const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+const DEV_HOST = getDevApiHost();
 
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',

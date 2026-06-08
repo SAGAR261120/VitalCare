@@ -88,33 +88,34 @@ export const Button: React.FC<ButtonProps> = ({
 
   const content = (
     <>
-      {loading ? (
-        <ActivityIndicator color={variantStyles.text} size="small" />
-      ) : (
-        <>
-          {icon && iconPosition === 'left' && (
-            <Icon
-              name={icon}
-              size={18}
-              color={variantStyles.text}
-              style={styles.iconLeft}
-            />
-          )}
-          <Text
-            variant="button"
-            color={isDisabled ? theme.colors.textTertiary : variantStyles.text}
-            style={{ fontSize: currentSize.fontSize }}>
-            {title}
-          </Text>
-          {icon && iconPosition === 'right' && (
-            <Icon
-              name={icon}
-              size={18}
-              color={variantStyles.text}
-              style={styles.iconRight}
-            />
-          )}
-        </>
+      {loading && (
+        <ActivityIndicator
+          color={variantStyles.text}
+          size="small"
+          style={styles.loadingIndicator}
+        />
+      )}
+      {!loading && icon && iconPosition === 'left' && (
+        <Icon
+          name={icon}
+          size={18}
+          color={variantStyles.text}
+          style={styles.iconLeft}
+        />
+      )}
+      <Text
+        variant="button"
+        color={isDisabled ? theme.colors.textTertiary : variantStyles.text}
+        style={{ fontSize: currentSize.fontSize, opacity: loading ? 0.85 : 1 }}>
+        {title}
+      </Text>
+      {!loading && icon && iconPosition === 'right' && (
+        <Icon
+          name={icon}
+          size={18}
+          color={variantStyles.text}
+          style={styles.iconRight}
+        />
       )}
     </>
   );
@@ -210,5 +211,8 @@ const styles = StyleSheet.create({
   },
   iconRight: {
     marginLeft: 8,
+  },
+  loadingIndicator: {
+    marginRight: 10,
   },
 });
