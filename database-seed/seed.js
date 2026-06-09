@@ -122,6 +122,9 @@ const seed = async () => {
     { name: 'Wellness', slug: 'wellness', icon: 'leaf-outline', sortOrder: 3 },
     { name: 'Insurance', slug: 'insurance', icon: 'shield-checkmark-outline', sortOrder: 4 },
     { name: 'Membership', slug: 'membership', icon: 'ribbon-outline', sortOrder: 5 },
+    { name: 'Health Checks', slug: 'pkg-health-checks', icon: 'heart-outline', scope: 'health-package', sortOrder: 1 },
+    { name: 'Lab Tests', slug: 'pkg-lab-tests', icon: 'flask-outline', scope: 'health-package', sortOrder: 2 },
+    { name: 'Scans', slug: 'pkg-scans', icon: 'scan-outline', scope: 'health-package', sortOrder: 3 },
   ];
   const categories = [];
   for (const c of catData) {
@@ -151,15 +154,103 @@ const seed = async () => {
   console.log('✓ Banners seeded');
 
   // ── Health Packages ──
+  const pkgCategories = categories.filter(c => c.scope === 'health-package');
+  const healthChecks = pkgCategories.find(c => c.slug === 'pkg-health-checks') || categories[0];
+  const labTests = pkgCategories.find(c => c.slug === 'pkg-lab-tests') || categories[0];
+  const scans = pkgCategories.find(c => c.slug === 'pkg-scans') || categories[0];
+
   const packages = [
-    { name: 'Essential Wellness', testCount: 18, price: 499, originalPrice: 1499, discount: 67, badge: 'Popular', isFeatured: true, category: categories[0]._id, description: 'Core health markers for routine wellness monitoring' },
-    { name: 'Complete Health Panel', testCount: 46, price: 999, originalPrice: 2999, discount: 67, badge: 'Best Value', isFeatured: true, category: categories[0]._id, description: 'Comprehensive diagnostics for complete health insight' },
-    { name: 'Executive Checkup', testCount: 72, price: 2499, originalPrice: 5999, discount: 58, badge: 'Premium', isFeatured: true, category: categories[0]._id, description: 'Premium full-body assessment for professionals' },
-    { name: 'Basic Package', testCount: 50, price: 1550, originalPrice: 5000, discount: 69, isFeatured: true, category: categories[0]._id, description: 'Essential tests for annual health monitoring' },
-    { name: 'Premium Package', testCount: 80, price: 3500, originalPrice: 8000, discount: 56, isFeatured: true, category: categories[0]._id, description: 'Advanced screening with specialist consultation' },
-    { name: 'Mini Package', testCount: 18, price: 500, originalPrice: 1500, discount: 67, category: categories[0]._id, description: 'Quick health snapshot' },
+    {
+      name: 'GKC Klinica Mini Package', code: 'GKC-MINI', category: healthChecks._id, sortOrder: 1,
+      price: 500, originalPrice: 1500, badge: 'Popular', isFeatured: true,
+      description: 'A quick yet comprehensive health snapshot ideal for routine wellness monitoring.',
+      includedTests: ['Fasting Blood Glucose', 'CBC', 'Creatinine', 'SGPT Test', 'Cholesterol', 'Thyroid TSH', 'Vitamin D', 'HbA1c', 'Uric Acid', 'Lipid Profile', 'Kidney Function', 'Liver Function', 'Iron Studies', 'Calcium', 'Electrolytes', 'Urine Routine', 'ECG', 'Chest X-Ray'],
+      excludedTests: ['MRI Scan', 'CT Scan'],
+      benefits: ['Home sample collection', 'Digital reports', 'Doctor consultation summary'],
+      preparationInstructions: 'Fast for 10-12 hours before sample collection. Avoid alcohol 24 hours prior.',
+      recommendedFor: ['Adults 25+', 'Annual checkup', 'Preventive screening'],
+      packageDuration: 'Same day collection',
+      reportDeliveryTime: '48 hours',
+    },
+    {
+      name: 'Essential Wellness', code: 'ESS-WELL', category: healthChecks._id, sortOrder: 2,
+      price: 499, originalPrice: 1499, badge: 'Best Value', isFeatured: true,
+      description: 'Core health markers for routine wellness monitoring.',
+      includedTests: ['CBC', 'Fasting Blood Glucose', 'Lipid Profile', 'Liver Function', 'Kidney Function', 'Thyroid TSH', 'Vitamin D', 'Vitamin B12', 'Iron Studies', 'Uric Acid', 'Calcium', 'Electrolytes', 'HbA1c', 'CRP', 'ESR', 'Urine Routine', 'Stool Routine', 'ECG'],
+      benefits: ['Free home collection', 'Online report access', 'Health summary'],
+      preparationInstructions: 'Maintain 10-12 hour fasting. Drink water as needed.',
+      recommendedFor: ['Working professionals', 'Family health screening'],
+      packageDuration: '1 visit',
+      reportDeliveryTime: '24 hours',
+    },
+    {
+      name: 'Complete Health Panel', code: 'CMP-46', category: healthChecks._id, sortOrder: 3,
+      price: 999, originalPrice: 2999, isFeatured: true,
+      description: 'Comprehensive diagnostics for complete health insight.',
+      includedTests: ['CBC', 'Lipid Profile', 'Liver Function', 'Kidney Function', 'Thyroid Panel', 'Diabetes Panel', 'Cardiac Risk Markers', 'Vitamin Panel', 'Hormone Panel', 'Inflammation Markers'],
+      benefits: ['Detailed health report', 'Specialist review', 'Priority support'],
+      preparationInstructions: 'Fast for 12 hours. Avoid strenuous exercise before collection.',
+      recommendedFor: ['Age 35+', 'Chronic condition monitoring'],
+      packageDuration: '1-2 days',
+      reportDeliveryTime: '48 hours',
+    },
+    {
+      name: 'Allergy Panel IgE', code: 'ALRG-IGE', category: labTests._id, sortOrder: 4,
+      price: 400, originalPrice: 600, isFeatured: false,
+      description: 'Allergen-specific immunoglobulin E blood test for common allergies.',
+      includedTests: ['Dust Mite IgE', 'Pollen IgE', 'Food Allergen Panel', 'Animal Dander IgE'],
+      excludedTests: ['Skin Prick Test'],
+      benefits: ['Identify allergy triggers', 'Guide treatment plan'],
+      preparationInstructions: 'No fasting required. Inform about antihistamine use.',
+      recommendedFor: ['Allergy sufferers', 'Asthma patients'],
+      packageDuration: 'Single visit',
+      reportDeliveryTime: '72 hours',
+    },
+    {
+      name: 'GKC Bone Care', code: 'GKC-BONE', category: labTests._id, sortOrder: 5,
+      price: 600, originalPrice: 800, isFeatured: true,
+      description: 'Bone health and joint wellness screening package.',
+      includedTests: ['Calcium', 'Vitamin D', 'Phosphorus', 'Alkaline Phosphatase', 'PTH', 'Rheumatoid Factor', 'CRP', 'Uric Acid', 'X-Ray Knee', 'Bone Density Screening'],
+      benefits: ['Bone health assessment', 'Orthopedic guidance'],
+      preparationInstructions: 'No special preparation. Wear comfortable clothing for imaging.',
+      recommendedFor: ['Seniors', 'Joint pain patients', 'Post-menopausal women'],
+      packageDuration: '1 day',
+      reportDeliveryTime: '48 hours',
+    },
+    {
+      name: 'Executive Checkup', code: 'EXEC-72', category: healthChecks._id, sortOrder: 6,
+      price: 2499, originalPrice: 5999, badge: 'Premium', isFeatured: true,
+      description: 'Premium full-body assessment for professionals.',
+      includedTests: ['Full Body Checkup', 'Cardiac Markers', 'Cancer Markers', 'Hormone Panel', 'Vitamin Panel', 'ECG', '2D Echo', 'Chest X-Ray', 'Ultrasound Abdomen'],
+      benefits: ['Executive lounge access', 'Dedicated health manager', 'Specialist consultation'],
+      preparationInstructions: 'Fast 12 hours. Schedule morning slot preferred.',
+      recommendedFor: ['Corporate executives', 'Age 40+'],
+      packageDuration: '2 days',
+      reportDeliveryTime: '72 hours',
+    },
+    {
+      name: 'Ultrasound Abdomen', code: 'USG-ABD', category: scans._id, sortOrder: 7,
+      price: 800, originalPrice: 1200, isFeatured: false,
+      description: 'Comprehensive abdominal ultrasound scan.',
+      includedTests: ['Liver', 'Gallbladder', 'Pancreas', 'Spleen', 'Kidneys', 'Bladder'],
+      benefits: ['Non-invasive imaging', 'Same-day report'],
+      preparationInstructions: 'Fast for 6 hours. Drink 4 glasses of water 1 hour before scan.',
+      recommendedFor: ['Abdominal pain', 'Digestive issues'],
+      packageDuration: '30 minutes',
+      reportDeliveryTime: '24 hours',
+    },
   ];
-  for (const p of packages) await HealthPackage.findOneAndUpdate({ name: p.name }, p, { upsert: true });
+  for (const p of packages) {
+    const payload = {
+      ...p,
+      testCount: p.includedTests?.length || p.testCount || 0,
+      discount:
+        p.originalPrice && p.price && p.originalPrice > p.price
+          ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)
+          : (p.discount || 0),
+    };
+    await HealthPackage.findOneAndUpdate({ code: p.code }, payload, { upsert: true });
+  }
   console.log('✓ Health packages seeded');
 
   // ── Specialists ──

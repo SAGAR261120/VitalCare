@@ -16,7 +16,8 @@ const makeCrudHandlers = resource => {
       res.json({ success: true, data });
     }),
     get: asyncHandler(async (req, res) => {
-      const item = await service.getById(req.params.id);
+      const isPublic = req.baseUrl.includes('/content') && !req.baseUrl.includes('/cms');
+      const item = await service.getById(req.params.id, isPublic);
       res.json({ success: true, data: item });
     }),
     create: asyncHandler(async (req, res) => {

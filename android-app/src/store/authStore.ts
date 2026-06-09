@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { STORAGE_KEYS } from '../constants';
-import { api } from '../services/api';
+import { api, clearAuthStorage, refreshAccessToken, setSessionExpiredHandler } from '../services/api';
 import { appStorage, secureStorage } from '../services/storage';
 import { User, UserRole } from '../types';
 
@@ -95,15 +95,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       );
       const user = appStorage.get<User>(STORAGE_KEYS.USER_DATA);
       const token = await secureStorage.getToken();
+      const refreshToken = appStorage.getString(STORAGE_KEYS.REFRESH_TOKEN);
+
+      if (token && user && refreshToken) {
+        await refreshAccessToken();
+      }
+
+      const activeToken = await secureStorage.getToken();
+      const activeUser = appStorage.get<User>(STORAGE_KEYS.USER_DATA);
 
       set({
         hasCompletedOnboarding: onboardingComplete ?? false,
-        isAuthenticated: !!token && !!user,
-        user: user ?? null,
+        isAuthenticated: !!activeToken && !!activeUser,
+        user: activeUser ?? null,
         isLoading: false,
       });
     } catch {
-      set({ isLoading: false });
+      await clearAuthStorage();
+      set({ isLoading: false, isAuthenticated: false, user: null });
     }
   },
 
@@ -166,15 +175,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async () => {
+    if (!get().isAuthenticated) return;
+
     const refreshToken = appStorage.getString(STORAGE_KEYS.REFRESH_TOKEN);
-    try {
-      await api.auth.logout(refreshToken);
-    } catch {
-      // Continue logout locally
-    }
-    await secureStorage.removeToken();
-    appStorage.remove(STORAGE_KEYS.USER_DATA);
-    appStorage.remove(STORAGE_KEYS.REFRESH_TOKEN);
+
     set({ isAuthenticated: false, user: null, pendingPhone: null });
+    await clearAuthStorage();
+
+    if (refreshToken) {
+      api.auth.logout(refreshToken).catch(() => {});
+    }
   },
 }));
+
+setSessionExpiredHandler(() => {
+  useAuthStore.setState({
+    isAuthenticated: false,
+    user: null,
+    pendingPhone: null,
+  });
+});

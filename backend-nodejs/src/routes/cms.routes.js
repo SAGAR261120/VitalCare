@@ -1,8 +1,10 @@
 const express = require('express');
 const { makeCrudHandlers } = require('../controllers/content.controller');
 const { protect, restrictTo, requirePermission } = require('../middleware/auth');
+const validate = require('../middleware/validate');
 const upload = require('../middleware/upload');
 const asyncHandler = require('../utils/asyncHandler');
+const healthPackageValidation = require('../validations/healthPackage.validation');
 const path = require('path');
 
 const router = express.Router();
@@ -15,16 +17,28 @@ const RESOURCES = [
   'menu-items', 'cities', 'rewards',
 ];
 
+const RESOURCE_VALIDATION = {
+  'health-packages': {
+    list: healthPackageValidation.listPackages,
+    get: healthPackageValidation.packageId,
+    create: healthPackageValidation.createPackage,
+    update: healthPackageValidation.updatePackage,
+    remove: healthPackageValidation.packageId,
+    toggle: healthPackageValidation.packageId,
+  },
+};
+
 RESOURCES.forEach(resource => {
   const handlers = makeCrudHandlers(resource);
   if (!handlers) return;
   const base = `/${resource}`;
-  router.get(base, requirePermission('content.read'), handlers.list);
-  router.get(`${base}/:id`, requirePermission('content.read'), handlers.get);
-  router.post(base, requirePermission('content.write'), handlers.create);
-  router.put(`${base}/:id`, requirePermission('content.write'), handlers.update);
-  router.delete(`${base}/:id`, requirePermission('content.delete'), handlers.remove);
-  router.patch(`${base}/:id/toggle`, requirePermission('content.write'), handlers.toggle);
+  const rules = RESOURCE_VALIDATION[resource] || {};
+  router.get(base, requirePermission('content.read'), ...(rules.list || []), validate, handlers.list);
+  router.get(`${base}/:id`, requirePermission('content.read'), ...(rules.get || []), validate, handlers.get);
+  router.post(base, requirePermission('content.write'), ...(rules.create || []), validate, handlers.create);
+  router.put(`${base}/:id`, requirePermission('content.write'), ...(rules.update || []), validate, handlers.update);
+  router.delete(`${base}/:id`, requirePermission('content.delete'), ...(rules.remove || []), validate, handlers.remove);
+  router.patch(`${base}/:id/toggle`, requirePermission('content.write'), ...(rules.toggle || []), validate, handlers.toggle);
 });
 
 router.post('/media/upload', requirePermission('media.manage', 'content.write'), upload.single('file'), (req, res) => {

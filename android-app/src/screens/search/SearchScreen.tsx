@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ScreenContainer } from '../../components/common/ScreenContainer';
 import { SearchBar } from '../../components/common/SearchBar';
@@ -21,6 +22,7 @@ interface SearchResult {
 
 export const SearchScreen: React.FC = () => {
   const theme = useTheme();
+  const navigation = useNavigation<any>();
   const { searchQuery, setSearchQuery } = useAppStore();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -73,7 +75,17 @@ export const SearchScreen: React.FC = () => {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <View style={[styles.resultItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          <TouchableOpacity
+            style={[styles.resultItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            onPress={() => {
+              if (item.type === 'package') {
+                navigation.navigate('HealthPackages', {
+                  screen: 'HealthPackageDetail',
+                  params: { packageId: item.id },
+                });
+              }
+            }}
+            accessibilityRole="button">
             <View style={[styles.resultIcon, { backgroundColor: `${theme.colors.primary}15` }]}>
               <Icon name={item.icon} size={20} color={theme.colors.primary} />
             </View>
@@ -82,7 +94,7 @@ export const SearchScreen: React.FC = () => {
               <Text variant="caption" color={theme.colors.textSecondary}>{item.subtitle}</Text>
             </View>
             <Icon name="chevron-forward" size={18} color={theme.colors.textSecondary} />
-          </View>
+          </TouchableOpacity>
         )}
       />
     </ScreenContainer>

@@ -9,6 +9,7 @@ import { APP_NAME } from '../constants';
 import { Text } from '../components/common/Text';
 import { MembershipScreen } from '../screens/services/MembershipScreen';
 import { InsuranceScreen } from '../screens/services/InsuranceScreen';
+import { HealthPackagesNavigator } from './HealthPackagesNavigator';
 import { useAuthStore } from '../store/authStore';
 import { useTheme } from '../theme';
 import { DrawerParamList } from '../types';
@@ -33,6 +34,8 @@ const InsuranceWithFab = () => (
   </MainShell>
 );
 
+const HealthPackagesWithFab = () => <HealthPackagesNavigator />;
+
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 const DRAWER_SECTIONS = [
@@ -43,6 +46,7 @@ const DRAWER_SECTIONS = [
   {
     title: 'Services',
     items: [
+      { icon: 'medkit-outline', label: 'Health Packages', route: 'HealthPackages' },
       { icon: 'shield-checkmark-outline', label: 'Membership Plans', route: 'Membership' },
       { icon: 'umbrella-outline', label: 'Insurance', route: 'Insurance' },
       { icon: 'fitness-outline', label: 'Yoga Sessions', route: 'MainTabs' },
@@ -125,7 +129,10 @@ const CustomDrawerContent = (props: any) => {
 
       <TouchableOpacity
         style={[styles.logoutBtn, { backgroundColor: theme.colors.error }]}
-        onPress={logout}
+        onPress={() => {
+          props.navigation.closeDrawer();
+          void logout();
+        }}
         accessibilityRole="button"
         accessibilityLabel="Logout">
         <Icon name="log-out-outline" size={20} color={theme.colors.white} />
@@ -154,6 +161,7 @@ export const DrawerNavigator: React.FC = () => {
         swipeEnabled: true,
       }}>
       <Drawer.Screen name="MainTabs" component={TabNavigatorShell} />
+      <Drawer.Screen name="HealthPackages" component={HealthPackagesWithFab} />
       <Drawer.Screen name="Membership" component={MembershipWithFab} />
       <Drawer.Screen name="Insurance" component={InsuranceWithFab} />
     </Drawer.Navigator>

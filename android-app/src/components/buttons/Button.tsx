@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -140,12 +140,11 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <Animated.View style={[animatedStyle, fullWidth && styles.fullWidth]}>
-      <Animated.View
-        onTouchStart={isDisabled ? undefined : onPressIn}
-        onTouchEnd={isDisabled ? undefined : onPressOut}
-        onTouchCancel={isDisabled ? undefined : onPressOut}
-        onStartShouldSetResponder={() => !isDisabled}
-        onResponderRelease={isDisabled ? undefined : onPress}
+      <Pressable
+        onPress={isDisabled ? undefined : onPress}
+        onPressIn={isDisabled ? undefined : onPressIn}
+        onPressOut={isDisabled ? undefined : onPressOut}
+        disabled={isDisabled}
         style={buttonStyle}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel ?? title}
@@ -179,7 +178,7 @@ export const Button: React.FC<ButtonProps> = ({
             {content}
           </Animated.View>
         )}
-      </Animated.View>
+      </Pressable>
     </Animated.View>
   );
 };

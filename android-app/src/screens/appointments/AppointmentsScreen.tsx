@@ -53,12 +53,22 @@ export const AppointmentsScreen: React.FC = () => {
           <Animated.View entering={FadeInDown.delay(index * 80).duration(350)}
             style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }, theme.shadows.sm]}>
             <View style={styles.cardHeader}>
-              <Text variant="h4">{item.doctorName || 'Health Checkup'}</Text>
+              <Text variant="h4">
+                {item.doctorName || (item as { healthPackage?: { name?: string } }).healthPackage?.name || 'Health Checkup'}
+              </Text>
               <View style={[styles.statusBadge, { backgroundColor: `${statusColors[item.status] || theme.colors.primary}20` }]}>
                 <Text variant="caption" color={statusColors[item.status] || theme.colors.primary}>{item.status}</Text>
               </View>
             </View>
-            {item.specialty && <Text variant="bodySmall" color={theme.colors.textSecondary}>{item.specialty}</Text>}
+            {item.specialty && (
+              <Text variant="bodySmall" color={theme.colors.textSecondary}>{item.specialty}</Text>
+            )}
+            {item.patientDetails?.fullName && (
+              <Text variant="caption" color={theme.colors.textTertiary}>
+                Patient: {item.patientDetails.fullName}
+                {item.patientDetails.city ? ` • ${item.patientDetails.city}` : ''}
+              </Text>
+            )}
             <View style={styles.metaRow}>
               <Icon name="calendar-outline" size={14} color={theme.colors.textSecondary} />
               <Text variant="caption" color={theme.colors.textSecondary}>

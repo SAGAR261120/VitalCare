@@ -27,7 +27,26 @@ const appointmentService = {
   },
 
   book: async (userId, data) => {
-    return Appointment.create({ ...data, user: userId, status: 'pending' });
+    if (!data.healthPackage && !data.specialist) {
+      throw new AppError('A health package or specialist is required', 400);
+    }
+    if (data.healthPackage) {
+      const HealthPackage = require('../models/HealthPackage');
+      const pkg = await HealthPackage.findOne({ _id: data.healthPackage, isActive: true });
+      if (!pkg) throw new AppError('Health package not found or inactive', 404);
+      data.doctorName = data.doctorName || pkg.name;
+      data.specialty = data.specialty || 'Health Package';
+    }
+    const appointmentDate = new Date(data.date);
+    if (Number.isNaN(appointmentDate.getTime())) {
+      throw new AppError('Invalid appointment date', 400);
+    }
+    return Appointment.create({
+      ...data,
+      date: appointmentDate,
+      user: userId,
+      status: 'upcoming',
+    });
   },
 };
 

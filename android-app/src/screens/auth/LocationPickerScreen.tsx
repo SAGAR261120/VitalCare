@@ -37,7 +37,7 @@ export const LocationPickerScreen: React.FC<Props> = ({
     return Object.values(CITIES).flat();
   }, [field]);
 
-  const filtered = items.filter(item =>
+  const filtered = (items ?? []).filter((item: string) =>
     item.toLowerCase().includes(search.toLowerCase()),
   );
 

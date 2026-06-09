@@ -29,35 +29,27 @@ export const isAndroidEmulator = (): boolean => {
 
 /**
  * Resolves the dev machine IP for API calls.
- * - Emulator: 10.0.2.2 maps to host localhost
- * - Physical device: PC LAN IP (from override or Metro script URL)
- * - USB + adb reverse: localhost works if `adb reverse tcp:5000 tcp:5000` is set
+ *
+ * Physical phone + Metro over USB reports localhost — that points to the phone,
+ * not your PC. We use DEV_API_HOST_OVERRIDE (LAN IP) or adb reverse instead.
  */
 export const getDevApiHost = (): string => {
+  const scriptURL: string | undefined = NativeModules.SourceCode?.scriptURL;
+  const metroMatch = scriptURL?.match(/https?:\/\/([^:/]+)/);
+  const metroHost = metroMatch?.[1];
+
+  if (metroHost && metroHost !== 'localhost' && metroHost !== '127.0.0.1') {
+    return metroHost;
+  }
+
   if (DEV_API_HOST_OVERRIDE) {
     return DEV_API_HOST_OVERRIDE;
   }
 
-  const scriptURL: string | undefined = NativeModules.SourceCode?.scriptURL;
-
-  if (scriptURL) {
-    const match = scriptURL.match(/https?:\/\/([^:/]+)/);
-    const host = match?.[1];
-
-    if (host && host !== 'localhost' && host !== '127.0.0.1') {
-      return host;
-    }
-
-    if (host === 'localhost' || host === '127.0.0.1') {
-      if (Platform.OS === 'android') {
-        return isAndroidEmulator() ? '10.0.2.2' : 'localhost';
-      }
-      return 'localhost';
-    }
-  }
-
   if (Platform.OS === 'android') {
-    return isAndroidEmulator() ? '10.0.2.2' : 'localhost';
+    if (isAndroidEmulator()) return '10.0.2.2';
+    // USB + `adb reverse tcp:5000 tcp:5000` makes localhost work on device
+    return 'localhost';
   }
 
   return 'localhost';

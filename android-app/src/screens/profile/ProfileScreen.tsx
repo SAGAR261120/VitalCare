@@ -160,7 +160,7 @@ export const ProfileScreen: React.FC = () => {
       <Button
         title="Sign Out"
         variant="danger"
-        onPress={logout}
+        onPress={() => void logout()}
         fullWidth
         icon="log-out-outline"
         style={styles.logoutBtn}

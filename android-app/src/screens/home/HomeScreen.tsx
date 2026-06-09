@@ -165,7 +165,7 @@ export const HomeScreen: React.FC = () => {
         </Animated.View>
       )}
 
-      <SectionHeader title="Health Packages" actionLabel="View All" onAction={() => navigation.navigate('SearchTab')} />
+      <SectionHeader title="Health Packages" actionLabel="View All" onAction={() => navigation.navigate('HealthPackages')} />
       {packages.length === 0 ? (
         <EmptyState
           title="No packages yet"
@@ -175,7 +175,17 @@ export const HomeScreen: React.FC = () => {
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} nestedScrollEnabled contentContainerStyle={styles.horizontalList}>
           {packages.map((item, index) => (
-            <HealthPackageCard key={item._id} package={{ ...item, id: item._id }} index={index} />
+            <HealthPackageCard
+              key={item._id}
+              package={{ ...item, id: item._id }}
+              index={index}
+              onPress={() =>
+                navigation.navigate('HealthPackages', {
+                  screen: 'HealthPackageDetail',
+                  params: { packageId: item._id },
+                })
+              }
+            />
           ))}
         </ScrollView>
       )}

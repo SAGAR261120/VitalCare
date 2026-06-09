@@ -16,6 +16,18 @@ const appointmentSchema = new mongoose.Schema(
       default: 'pending',
     },
     notes: { type: String },
+    patientDetails: {
+      fullName: { type: String },
+      age: { type: Number },
+      gender: { type: String },
+      relationship: { type: String },
+      address: { type: String },
+      city: { type: String },
+      landmark: { type: String },
+      pincode: { type: String },
+      state: { type: String },
+      district: { type: String },
+    },
   },
   { timestamps: true },
 );

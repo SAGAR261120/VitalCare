@@ -17,7 +17,12 @@ const MODEL_MAP = {
   categories: { Model: Category, searchFields: ['name', 'slug'], public: true },
   subcategories: { Model: Subcategory, searchFields: ['name'], public: true },
   banners: { Model: Banner, searchFields: ['title'], public: true },
-  'health-packages': { Model: HealthPackage, searchFields: ['name', 'description'], public: true },
+  'health-packages': {
+    Model: HealthPackage,
+    searchFields: ['name', 'description', 'code'],
+    public: true,
+    populate: [{ path: 'category', select: 'name slug icon image scope' }],
+  },
   specialists: { Model: Specialist, searchFields: ['name', 'specialty'], public: true },
   'membership-plans': { Model: MembershipPlan, searchFields: ['name'], public: true },
   'insurance-plans': { Model: InsurancePlan, searchFields: ['provider', 'name'], public: true },
@@ -35,6 +40,7 @@ const getService = resource => {
   return createCrudService(config.Model, {
     searchFields: config.searchFields,
     publicFilter: config.public ? { isActive: true } : {},
+    populate: config.populate || [],
   });
 };
 

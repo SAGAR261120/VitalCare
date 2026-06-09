@@ -81,12 +81,17 @@ export interface Banner {
 export interface HealthPackage {
   _id: string;
   name: string;
+  code?: string;
   testCount: number;
   price: number;
   originalPrice?: number;
   discount?: number;
   badge?: string;
   description?: string;
+  image?: string;
+  includedTests?: string[];
+  benefits?: string[];
+  reportDeliveryTime?: string;
 }
 
 export interface Specialist {
@@ -144,6 +149,12 @@ export interface Appointment {
   time: string;
   status: string;
   hospital?: string;
+  healthPackage?: { _id: string; name: string; price?: number };
+  patientDetails?: {
+    fullName?: string;
+    city?: string;
+    pincode?: string;
+  };
 }
 
 export interface RewardTask {

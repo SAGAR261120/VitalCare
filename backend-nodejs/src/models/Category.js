@@ -7,6 +7,7 @@ const categorySchema = new mongoose.Schema(
     description: { type: String },
     icon: { type: String, default: 'folder-outline' },
     image: { type: String },
+    scope: { type: String, enum: ['general', 'health-package'], default: 'general' },
     sortOrder: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },

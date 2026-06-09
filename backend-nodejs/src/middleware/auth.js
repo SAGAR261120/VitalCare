@@ -48,4 +48,23 @@ const requirePermission = (...permissions) =>
     next();
   });
 
-module.exports = { protect, restrictTo, requirePermission };
+const optionalProtect = asyncHandler(async (req, _res, next) => {
+  if (!req.headers.authorization?.startsWith('Bearer ')) {
+    return next();
+  }
+
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = verifyAccessToken(token);
+    const user = await User.findById(decoded.id);
+    if (user?.isActive) {
+      req.user = user;
+    }
+  } catch {
+    // Ignore invalid/expired access tokens for optional auth routes
+  }
+
+  next();
+});
+
+module.exports = { protect, restrictTo, requirePermission, optionalProtect };

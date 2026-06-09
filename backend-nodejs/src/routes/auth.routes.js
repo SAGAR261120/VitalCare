@@ -1,7 +1,7 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller');
 const validate = require('../middleware/validate');
-const { protect } = require('../middleware/auth');
+const { protect, optionalProtect } = require('../middleware/auth');
 const {
   registerValidation,
   loginValidation,
@@ -17,7 +17,7 @@ const router = express.Router();
 router.post('/register', registerValidation, validate, authController.register);
 router.post('/login', loginValidation, validate, authController.login);
 router.post('/refresh', authController.refreshToken);
-router.post('/logout', protect, authController.logout);
+router.post('/logout', optionalProtect, authController.logout);
 router.post('/forgot-password', forgotPasswordValidation, validate, authController.forgotPassword);
 router.post('/reset-password', resetPasswordValidation, validate, authController.resetPassword);
 router.post('/change-password', protect, changePasswordValidation, validate, authController.changePassword);

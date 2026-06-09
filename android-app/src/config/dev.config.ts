@@ -1,6 +1,6 @@
 /**
- * Physical Android devices cannot use 10.0.2.2 (emulator-only).
- * Set this to your PC's Wi-Fi IP (run `ipconfig` → IPv4 Address).
- * Set to null to rely on auto-detection from Metro.
+ * Your PC's Wi-Fi IP for API calls on a physical device.
+ * Run `ipconfig` → IPv4 Address when your network changes.
+ * Metro over USB uses localhost and cannot reach the backend without this.
  */
 export const DEV_API_HOST_OVERRIDE: string | null = '192.168.1.3';

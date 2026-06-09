@@ -6,24 +6,37 @@ const storage = createMMKV({ id: 'vitalcare-storage' });
 
 export const secureStorage = {
   async setToken(token: string): Promise<void> {
-    await Keychain.setGenericPassword(STORAGE_KEYS.AUTH_TOKEN, token, {
-      service: 'vitalcare.auth',
-      accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
-    });
+    try {
+      await Keychain.setGenericPassword(STORAGE_KEYS.AUTH_TOKEN, token, {
+        service: 'vitalcare.auth',
+        accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+      });
+    } catch {
+      appStorage.setString(STORAGE_KEYS.AUTH_TOKEN, token);
+    }
   },
 
   async getToken(): Promise<string | null> {
-    const credentials = await Keychain.getGenericPassword({
-      service: 'vitalcare.auth',
-    });
-    if (credentials && typeof credentials !== 'boolean') {
-      return credentials.password;
+    try {
+      const credentials = await Keychain.getGenericPassword({
+        service: 'vitalcare.auth',
+      });
+      if (credentials && typeof credentials !== 'boolean') {
+        return credentials.password;
+      }
+    } catch {
+      // fall through to MMKV
     }
-    return null;
+    return appStorage.getString(STORAGE_KEYS.AUTH_TOKEN) ?? null;
   },
 
   async removeToken(): Promise<void> {
-    await Keychain.resetGenericPassword({ service: 'vitalcare.auth' });
+    try {
+      await Keychain.resetGenericPassword({ service: 'vitalcare.auth' });
+    } catch {
+      // ignore keychain errors
+    }
+    appStorage.remove(STORAGE_KEYS.AUTH_TOKEN);
   },
 };
 

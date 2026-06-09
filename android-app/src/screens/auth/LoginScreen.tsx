@@ -14,6 +14,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useAppStore } from '../../store/appStore';
 import { AuthStackParamList } from '../../types';
 import { useTheme } from '../../theme';
+import { resetToMain } from '../../utils/navigation';
 import { LoginFormData, loginSchema } from '../../utils/validation';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
@@ -43,8 +44,13 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       if (method === 'otp') {
         await sendOtp(data.phone);
         navigation.navigate('VerifyOtp', { phone: data.phone });
-      } else if (data.password) {
+      } else {
+        if (!data.password) {
+          Alert.alert('Login failed', 'Please enter your password');
+          return;
+        }
         await loginWithPassword(data.phone, data.password);
+        resetToMain(navigation);
       }
     } catch (err: unknown) {
       const message = (err as { message?: string })?.message || 'Login failed. Check backend is running.';

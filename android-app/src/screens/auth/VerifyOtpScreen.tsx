@@ -15,6 +15,7 @@ import { useAuthStore } from '../../store/authStore';
 import { AuthStackParamList } from '../../types';
 import { useTheme } from '../../theme';
 import { formatPhone } from '../../utils/format';
+import { resetToMain } from '../../utils/navigation';
 import { OtpFormData, otpSchema } from '../../utils/validation';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'VerifyOtp'>;
@@ -52,6 +53,7 @@ export const VerifyOtpScreen: React.FC<Props> = ({ navigation, route }) => {
     setLoading(true);
     try {
       await verifyOtp(phone, data.otp);
+      resetToMain(navigation);
     } finally {
       setLoading(false);
     }

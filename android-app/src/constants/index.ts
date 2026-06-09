@@ -2,6 +2,8 @@ import { getDevApiHost } from '../utils/devHost';
 
 const DEV_HOST = getDevApiHost();
 
+export const APP_NAME = 'VitalCare';
+
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',
   USER_DATA: 'user_data',
@@ -19,6 +21,38 @@ export const API_CONFIG = {
 } as const;
 
 export const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer not to say'];
+
+export const INDIAN_STATES = [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Delhi',
+] as const;
 
 export const ACTIVITY_FILTERS = ['All', 'Like', 'Comment', 'Feedback', 'Queries'] as const;
 

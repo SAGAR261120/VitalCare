@@ -17,17 +17,7 @@ export const BannersPage = () => (
     ]} />
 );
 
-export const HealthPackagesPage = () => (
-  <ContentManagePage title="Health Packages" resource="health-packages"
-    columns={[{ key: 'name', label: 'Name' }, { key: 'price', label: 'Price' }, { key: 'testCount', label: 'Tests' }]}
-    fields={[
-      { key: 'name', label: 'Name' }, { key: 'description', label: 'Description', multiline: true },
-      { key: 'testCount', label: 'Test Count', type: 'number' }, { key: 'price', label: 'Price', type: 'number' },
-      { key: 'originalPrice', label: 'Original Price', type: 'number' }, { key: 'discount', label: 'Discount %', type: 'number' },
-      { key: 'badge', label: 'Badge' }, { key: 'isFeatured', label: 'Featured', type: 'boolean' },
-      { key: 'isActive', label: 'Active', type: 'boolean' },
-    ]} />
-);
+export { HealthPackagesManagePage as HealthPackagesPage } from '../HealthPackagesManagePage';
 
 export const SpecialistsPage = () => (
   <ContentManagePage title="Specialists" resource="specialists"
@@ -65,10 +55,12 @@ export const InsurancePlansPage = () => (
 
 export const CategoriesPage = () => (
   <ContentManagePage title="Categories" resource="categories"
-    columns={[{ key: 'name', label: 'Name' }, { key: 'slug', label: 'Slug' }]}
+    columns={[{ key: 'name', label: 'Name' }, { key: 'slug', label: 'Slug' }, { key: 'scope', label: 'Scope' }]}
     fields={[
       { key: 'name', label: 'Name' }, { key: 'slug', label: 'Slug' },
-      { key: 'icon', label: 'Icon' }, { key: 'sortOrder', label: 'Sort Order', type: 'number' },
+      { key: 'icon', label: 'Icon' }, { key: 'image', label: 'Category Image', type: 'image' },
+      { key: 'scope', label: 'Scope (general / health-package)' },
+      { key: 'sortOrder', label: 'Sort Order', type: 'number' },
       { key: 'isActive', label: 'Active', type: 'boolean' },
     ]} />
 );

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  CommonActions,
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
@@ -22,6 +23,15 @@ import { DrawerNavigator } from './DrawerNavigator';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+
+/** Leaf route from nested stacks (e.g. Login); use root stack name for auth gating. */
+const getRootRouteName = (
+  ref: NavigationContainerRef<RootStackParamList>,
+): string | undefined => {
+  const state = ref.getRootState();
+  if (!state?.routes.length) return undefined;
+  return state.routes[state.index ?? 0]?.name;
+};
 
 const AuthNavigator: React.FC = () => {
   const theme = useTheme();
@@ -49,6 +59,7 @@ const AuthNavigator: React.FC = () => {
 export const RootNavigator: React.FC = () => {
   const theme = useTheme();
   const navigationRef = useRef<NavigationContainerRef<RootStackParamList>>(null);
+  const [navReady, setNavReady] = useState(false);
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const isLoading = useAuthStore(state => state.isLoading);
   const initializeNetwork = useNetworkStore(state => state.initialize);
@@ -57,28 +68,49 @@ export const RootNavigator: React.FC = () => {
     return initializeNetwork();
   }, [initializeNetwork]);
 
-  useEffect(() => {
-    if (isLoading || !navigationRef.current) return;
+  const syncAuthRoute = useCallback(() => {
+    if (isLoading || !navReady) return;
+
+    const ref = navigationRef.current;
+    if (!ref) return;
+
+    const rootRoute = getRootRouteName(ref);
+    const preAuthRoutes = new Set(['Splash', 'Onboarding', 'Auth']);
 
     if (isAuthenticated) {
-      navigationRef.current.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
-    } else {
-      const currentRoute = navigationRef.current.getCurrentRoute()?.name;
-      if (currentRoute === 'Main') {
-        navigationRef.current.reset({
+      if (rootRoute !== 'Main') {
+        ref.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          }),
+        );
+      }
+      return;
+    }
+
+    if (rootRoute && !preAuthRoutes.has(rootRoute)) {
+      ref.dispatch(
+        CommonActions.reset({
           index: 0,
           routes: [{ name: 'Auth' }],
-        });
-      }
+        }),
+      );
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, navReady]);
+
+  useEffect(() => {
+    syncAuthRoute();
+  }, [syncAuthRoute]);
 
   return (
     <NavigationContainer
       ref={navigationRef}
+      onReady={() => {
+        setNavReady(true);
+        syncAuthRoute();
+      }}
+      onStateChange={syncAuthRoute}
       theme={{
         dark: theme.isDark,
         colors: {

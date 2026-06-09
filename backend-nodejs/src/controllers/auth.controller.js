@@ -43,7 +43,15 @@ const refreshToken = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  await authService.logout(req.body.refreshToken, req.user._id, req);
+  let userId = req.user?._id;
+
+  if (!userId && req.body.refreshToken) {
+    const RefreshToken = require('../models/RefreshToken');
+    const stored = await RefreshToken.findOne({ token: req.body.refreshToken });
+    userId = stored?.user;
+  }
+
+  await authService.logout(req.body.refreshToken, userId, req);
   res.json({ success: true, message: 'Logged out successfully' });
 });
 

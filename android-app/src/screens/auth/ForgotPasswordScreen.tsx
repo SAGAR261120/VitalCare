@@ -54,8 +54,9 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
     <GradientBackground variant="auth">
       <View style={styles.container}>
         <IconButton
-          icon="arrow-back"
+          name="arrow-back"
           onPress={() => navigation.goBack()}
+          accessibilityLabel="Go back"
           style={styles.backBtn}
         />
         <Animated.View entering={FadeInDown.duration(500)}>
@@ -66,7 +67,7 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
             <Text variant="h3" align="center" style={styles.title}>
               Forgot Password
             </Text>
-            <Text variant="body" color="secondary" align="center" style={styles.subtitle}>
+            <Text variant="body" color={theme.colors.textSecondary} align="center" style={styles.subtitle}>
               Enter your email and we'll send you instructions to reset your password.
             </Text>
             <Controller

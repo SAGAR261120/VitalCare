@@ -3,15 +3,20 @@ const AppError = require('./AppError');
 /**
  * Factory for standard CRUD service operations on a Mongoose model
  */
-const createCrudService = (Model, { searchFields = [], publicFilter = { isActive: true } } = {}) => ({
+const createCrudService = (Model, { searchFields = [], publicFilter = { isActive: true }, populate = [] } = {}) => {
+  const applyPopulate = q => (populate.length ? q.populate(populate) : q);
+
+  return {
   list: async (opts = {}, isPublic = false) => {
     const page = +opts.page || 1;
     const limit = Math.min(100, +opts.limit || 20);
     const skip = (page - 1) * limit;
     const query = isPublic ? { ...publicFilter } : {};
 
-    if (opts.isActive !== undefined && !isPublic) query.isActive = opts.isActive === 'true';
+    if (opts.isActive !== undefined) query.isActive = opts.isActive === 'true';
+    if (opts.isFeatured !== undefined) query.isFeatured = opts.isFeatured === 'true';
     if (opts.category) query.category = opts.category;
+    if (opts.scope) query.scope = opts.scope;
     if (opts.placement) query.placement = opts.placement;
     if (opts.section) query.section = opts.section;
     if (opts.status) query.status = opts.status;
@@ -23,22 +28,23 @@ const createCrudService = (Model, { searchFields = [], publicFilter = { isActive
 
     const sort = opts.sort || 'sortOrder -createdAt';
     const [items, total] = await Promise.all([
-      Model.find(query).sort(sort).skip(skip).limit(limit),
+      applyPopulate(Model.find(query)).sort(sort).skip(skip).limit(limit),
       Model.countDocuments(query),
     ]);
     return { items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } };
   },
 
-  getById: async id => {
-    const item = await Model.findById(id);
+  getById: async (id, isPublic = false) => {
+    const item = await applyPopulate(Model.findById(id));
     if (!item) throw new AppError('Resource not found', 404, 'NOT_FOUND');
+    if (isPublic && item.isActive === false) throw new AppError('Resource not found', 404, 'NOT_FOUND');
     return item;
   },
 
   create: async data => Model.create(data),
 
   update: async (id, data) => {
-    const item = await Model.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    const item = await applyPopulate(Model.findByIdAndUpdate(id, data, { new: true, runValidators: true }));
     if (!item) throw new AppError('Resource not found', 404, 'NOT_FOUND');
     return item;
   },
@@ -56,6 +62,7 @@ const createCrudService = (Model, { searchFields = [], publicFilter = { isActive
     await item.save();
     return item;
   },
-});
+};
+};
 
 module.exports = createCrudService;

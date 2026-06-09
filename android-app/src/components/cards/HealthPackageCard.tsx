@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../../theme';
@@ -21,9 +21,9 @@ export const HealthPackageCard: React.FC<HealthPackageCardProps> = ({
   const theme = useTheme();
 
   return (
+    <Pressable onPress={onPress} disabled={!onPress}>
     <Animated.View
       entering={FadeInRight.delay(index * 100).duration(400)}
-      onTouchEnd={onPress}
       style={[
         styles.card,
         {
@@ -85,16 +85,20 @@ export const HealthPackageCard: React.FC<HealthPackageCardProps> = ({
                   styles.discountBadge,
                   { backgroundColor: theme.colors.accentWarm },
                 ]}>
-                <Text variant="caption" color={theme.colors.white}>
-                  {formatDiscount(pkg.discount)}
-                </Text>
+                {!!pkg.discount && (
+                  <Text variant="caption" color={theme.colors.white}>
+                    {formatDiscount(pkg.discount)}
+                  </Text>
+                )}
               </View>
-              <Text
-                variant="caption"
-                color={theme.colors.textTertiary}
-                style={styles.strike}>
-                {formatCurrency(pkg.originalPrice)}
-              </Text>
+              {!!pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                <Text
+                  variant="caption"
+                  color={theme.colors.textTertiary}
+                  style={styles.strike}>
+                  {formatCurrency(pkg.originalPrice)}
+                </Text>
+              )}
             </View>
             <Text variant="h3" color={theme.colors.secondary}>
               {formatCurrency(pkg.price)}
@@ -110,6 +114,7 @@ export const HealthPackageCard: React.FC<HealthPackageCardProps> = ({
         </View>
       </View>
     </Animated.View>
+    </Pressable>
   );
 };
 

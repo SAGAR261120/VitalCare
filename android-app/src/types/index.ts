@@ -1,3 +1,5 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 export type UserRole =
   | 'user'
   | 'doctor'
@@ -36,15 +38,35 @@ export interface LocationData {
   isLoading: boolean;
 }
 
+export interface HealthPackageCategory {
+  _id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  image?: string;
+}
+
 export interface HealthPackage {
+  _id?: string;
   id: string;
   name: string;
+  code?: string;
   testCount: number;
   price: number;
-  originalPrice: number;
-  discount: number;
-  description: string;
+  originalPrice?: number;
+  discount?: number;
+  description?: string;
   badge?: string;
+  image?: string;
+  category?: HealthPackageCategory | string;
+  includedTests?: string[];
+  excludedTests?: string[];
+  benefits?: string[];
+  preparationInstructions?: string;
+  recommendedFor?: string[];
+  packageDuration?: string;
+  reportDeliveryTime?: string;
+  isFeatured?: boolean;
 }
 
 export interface Specialist {
@@ -130,10 +152,30 @@ export type MainTabParamList = {
   Profile: undefined;
 };
 
+export type HealthPackagesStackParamList = {
+  HealthPackagesList: undefined;
+  HealthPackageDetail: { packageId: string; startBooking?: boolean };
+  HealthPackageBooking: { packageId: string; packageName?: string; date: string; time: string };
+};
+
+export interface PackageBookingForm {
+  fullName: string;
+  age: string;
+  gender: string;
+  relationship: string;
+  address: string;
+  city: string;
+  landmark: string;
+  pincode: string;
+  state: string;
+  district: string;
+}
+
 export type DrawerParamList = {
   MainTabs: undefined;
   Membership: undefined;
   Insurance: undefined;
+  HealthPackages: NavigatorScreenParams<HealthPackagesStackParamList> | undefined;
   MedicalRecords: undefined;
   Settings: undefined;
 };

@@ -10,6 +10,9 @@ const {
   rewardService,
 } = require('../controllers/content.controller');
 const { protect, restrictTo, requirePermission } = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const healthPackageValidation = require('../validations/healthPackage.validation');
+const appointmentValidation = require('../validations/appointment.validation');
 const asyncHandler = require('../utils/asyncHandler');
 
 const router = express.Router();
@@ -29,8 +32,10 @@ const RESOURCES = [
 RESOURCES.forEach(resource => {
   const handlers = makeCrudHandlers(resource);
   if (!handlers) return;
-  router.get(`/${resource}`, handlers.list);
-  router.get(`/${resource}/:id`, handlers.get);
+  const listRules = resource === 'health-packages' ? healthPackageValidation.listPackages : [];
+  const getRules = resource === 'health-packages' ? healthPackageValidation.packageId : [];
+  router.get(`/${resource}`, ...listRules, validate, handlers.list);
+  router.get(`/${resource}/:id`, ...getRules, validate, handlers.get);
 });
 
 // Protected user endpoints
@@ -41,7 +46,7 @@ router.get('/appointments', asyncHandler(async (req, res) => {
   res.json({ success: true, data });
 }));
 
-router.post('/appointments', asyncHandler(async (req, res) => {
+router.post('/appointments', appointmentValidation.bookAppointment, validate, asyncHandler(async (req, res) => {
   const item = await appointmentService.book(req.user._id, req.body);
   res.status(201).json({ success: true, data: item });
 }));
