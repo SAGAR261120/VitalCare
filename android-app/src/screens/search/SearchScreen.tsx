@@ -83,6 +83,11 @@ export const SearchScreen: React.FC = () => {
                   screen: 'HealthPackageDetail',
                   params: { packageId: item.id },
                 });
+              } else if (item.type === 'insurance') {
+                navigation.navigate('Insurance', {
+                  screen: 'InsuranceDetail',
+                  params: { planId: item.id },
+                });
               }
             }}
             accessibilityRole="button">

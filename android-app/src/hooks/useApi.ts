@@ -57,6 +57,9 @@ export function useHomeFeed() {
     packages: HealthPackage[];
     specialists: Specialist[];
     insurance: InsurancePlan[];
+    insuranceBanner: Banner | null;
+    cycleBanner: Banner | null;
+    cycleWellnessTip: { title?: string; message: string } | null;
     settings: Record<string, unknown>;
   }>(fetchHome);
 }
@@ -112,6 +115,15 @@ export interface InsurancePlan {
   premium: number;
   recommended?: boolean;
   tenure?: string;
+  pdfUrl?: string;
+  image?: string;
+  cashlessHospitals?: string;
+  sumInsured?: number;
+  subLimits?: string;
+  noClaimBonus?: string;
+  waitingPeriod?: string;
+  claimSettlementRatio?: string;
+  coPayment?: string;
 }
 
 export interface OnboardingSlide {

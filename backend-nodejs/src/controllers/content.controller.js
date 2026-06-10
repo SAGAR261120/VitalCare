@@ -1,6 +1,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const { getService } = require('../services/content.service');
-const { appointmentService, rewardService } = require('../services/mobile.service');
+const { appointmentService, rewardService, insuranceSubmissionService } = require('../services/mobile.service');
+const { cycleService } = require('../services/cycle.service');
 const Settings = require('../models/Settings');
 const Activity = require('../models/Activity');
 const AppError = require('../utils/AppError');
@@ -46,11 +47,14 @@ const getHomeFeed = asyncHandler(async (_req, res) => {
   const InsurancePlan = require('../models/InsurancePlan');
   const Settings = require('../models/Settings');
 
-  const [banners, packages, specialists, insurance, settings] = await Promise.all([
+  const [banners, packages, specialists, insurance, insuranceBanner, cycleBanner, cycleWellnessTip, settings] = await Promise.all([
     Banner.find({ isActive: true, placement: 'home' }).sort('sortOrder').limit(5),
     HealthPackage.find({ isActive: true, isFeatured: true }).sort('sortOrder').limit(6),
     Specialist.find({ isActive: true, isFeatured: true }).sort('sortOrder').limit(8),
     InsurancePlan.find({ isActive: true, recommended: true }).sort('sortOrder').limit(3),
+    Banner.findOne({ isActive: true, placement: 'insurance' }).sort('sortOrder'),
+    Banner.findOne({ isActive: true, placement: 'cycle' }).sort('sortOrder'),
+    cycleService.getRandomTip(),
     Settings.find({}),
   ]);
 
@@ -58,7 +62,7 @@ const getHomeFeed = asyncHandler(async (_req, res) => {
 
   res.json({
     success: true,
-    data: { banners, packages, specialists, insurance, settings: settingsMap },
+    data: { banners, packages, specialists, insurance, insuranceBanner, cycleBanner, cycleWellnessTip, settings: settingsMap },
   });
 });
 
@@ -136,4 +140,6 @@ module.exports = {
   getPageBySlug,
   appointmentService,
   rewardService,
+  insuranceSubmissionService,
+  cycleService,
 };

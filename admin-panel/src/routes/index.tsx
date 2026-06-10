@@ -9,8 +9,9 @@ import { NotificationsPage } from '../pages/NotificationsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import {
   BannersPage, HealthPackagesPage, SpecialistsPage, MembershipPlansPage,
-  InsurancePlansPage, CategoriesPage, OnboardingPage, RewardsManagePage,
+  InsurancePlansPage, CycleWellnessTipsPage, CategoriesPage, OnboardingPage, RewardsManagePage,
 } from '../pages/content';
+import { InsuranceSubmissionsPage } from '../pages/InsuranceSubmissionsPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
@@ -30,6 +31,8 @@ export const AppRoutes = () => (
       <Route path="content/specialists" element={<SpecialistsPage />} />
       <Route path="content/membership" element={<MembershipPlansPage />} />
       <Route path="content/insurance" element={<InsurancePlansPage />} />
+      <Route path="content/insurance-submissions" element={<InsuranceSubmissionsPage />} />
+      <Route path="content/cycle-tips" element={<CycleWellnessTipsPage />} />
       <Route path="content/categories" element={<CategoriesPage />} />
       <Route path="content/onboarding" element={<OnboardingPage />} />
       <Route path="content/rewards" element={<RewardsManagePage />} />

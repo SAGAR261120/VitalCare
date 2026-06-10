@@ -10,7 +10,7 @@ const bannerSchema = new mongoose.Schema(
     linkValue: { type: String },
     sortOrder: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
-    placement: { type: String, enum: ['home', 'onboarding', 'promo'], default: 'home' },
+    placement: { type: String, enum: ['home', 'onboarding', 'promo', 'insurance', 'cycle'], default: 'home' },
   },
   { timestamps: true },
 );

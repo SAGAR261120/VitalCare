@@ -90,14 +90,38 @@ export interface MembershipPlan {
 }
 
 export interface InsurancePlan {
+  _id?: string;
   id: string;
   provider: string;
   name: string;
-  description: string;
+  description?: string;
   coverage: number;
   premium: number;
+  tenure?: string;
+  image?: string;
+  pdfUrl?: string;
+  cashlessHospitals?: string;
+  sumInsured?: number;
+  subLimits?: string;
+  noClaimBonus?: string;
+  waitingPeriod?: string;
+  claimSettlementRatio?: string;
+  coPayment?: string;
   recommended?: boolean;
+  sortOrder?: number;
 }
+
+export type CycleStackParamList = {
+  CycleDashboard: undefined;
+  CycleProfileSetup: undefined;
+};
+
+export type InsuranceStackParamList = {
+  InsuranceList: { openSubmit?: boolean } | undefined;
+  InsuranceDetail: { planId: string };
+  ViewRequirements: undefined;
+  UploadInsurance: undefined;
+};
 
 export interface Appointment {
   id: string;
@@ -174,8 +198,9 @@ export interface PackageBookingForm {
 export type DrawerParamList = {
   MainTabs: undefined;
   Membership: undefined;
-  Insurance: undefined;
   HealthPackages: NavigatorScreenParams<HealthPackagesStackParamList> | undefined;
+  Insurance: NavigatorScreenParams<InsuranceStackParamList> | undefined;
+  Cycle: NavigatorScreenParams<CycleStackParamList> | undefined;
   MedicalRecords: undefined;
   Settings: undefined;
 };

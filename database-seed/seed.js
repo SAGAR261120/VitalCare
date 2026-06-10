@@ -32,6 +32,7 @@ const Activity = require(require('path').join(modelPath, 'Activity'));
 const Settings = require(require('path').join(modelPath, 'Settings'));
 const Appointment = require(require('path').join(modelPath, 'Appointment'));
 const RewardTransaction = require(require('path').join(modelPath, 'RewardTransaction'));
+const CycleWellnessTip = require(require('path').join(modelPath, 'CycleWellnessTip'));
 
 const FIRST_NAMES = ['Aarav','Vivaan','Aditya','Vihaan','Arjun','Sai','Reyansh','Ayaan','Krishna','Ishaan','Ananya','Diya','Myra','Aadhya','Kiara','Navya','Pari','Saanvi','Ira','Avni','Rohan','Kabir','Dev','Yash','Atharv','Priya','Neha','Pooja','Kavya','Shreya','Rahul','Amit','Suresh','Rajesh','Vikram','Deepak','Manoj','Sanjay','Nitin','Pradeep','Sneha','Ritu','Meera','Tanvi','Nisha','Kiran','Harish','Gopal','Mahesh','Lalit'];
 const LAST_NAMES = ['Sharma','Patel','Kumar','Singh','Gupta','Reddy','Nair','Iyer','Joshi','Mehta','Shah','Rao','Chopra','Malhotra','Verma','Das','Pillai','Menon','Bhat','Desai'];
@@ -148,10 +149,24 @@ const seed = async () => {
     { title: 'Healthcare Reimagined', subtitle: 'Premium health services at your fingertips', placement: 'home', gradient: ['#EDE9FE','#E0F2FE'], sortOrder: 1 },
     { title: 'Schedule a Checkup', subtitle: 'Book comprehensive health packages today', placement: 'home', gradient: ['#ECFDF5','#E0F2FE'], sortOrder: 2 },
     { title: 'Insurance Made Easy', subtitle: 'Compare and choose the best plans', placement: 'promo', gradient: ['#FFF7ED','#FFF1F2'], sortOrder: 3 },
+    { title: 'THE INSURANCE SECTION OF GKC KLINICA!', subtitle: 'Upload and save your policies securely. Always Here For You.', placement: 'insurance', gradient: ['#E0F2FE','#EDE9FE'], sortOrder: 1 },
+    { title: 'Your Health Partner', subtitle: 'Period & Pregnancy Tracking Tool', placement: 'cycle', gradient: ['#FFF1F2','#FCE7F3'], sortOrder: 1 },
     { title: 'Wellness Journey', subtitle: 'Track health metrics and earn rewards', placement: 'home', gradient: ['#F0F9FF','#EDE9FE'], sortOrder: 4 },
   ];
   for (const b of banners) await Banner.findOneAndUpdate({ title: b.title }, b, { upsert: true });
   console.log('✓ Banners seeded');
+
+  // ── Cycle Wellness Tips ──
+  const cycleTips = [
+    { title: 'Daily Wellness Tip', message: 'Prioritize self-care, balanced diet, and manage stress.', sortOrder: 1 },
+    { title: 'Hydration', message: 'Drink plenty of water throughout the day to support overall wellness.', sortOrder: 2 },
+    { title: 'Rest', message: 'Aim for 7–8 hours of sleep to help regulate your cycle naturally.', sortOrder: 3 },
+    { title: 'Movement', message: 'Light exercise like walking or yoga can ease cramps and boost mood.', sortOrder: 4 },
+  ];
+  for (const tip of cycleTips) {
+    await CycleWellnessTip.findOneAndUpdate({ message: tip.message }, tip, { upsert: true });
+  }
+  console.log('✓ Cycle wellness tips seeded');
 
   // ── Health Packages ──
   const pkgCategories = categories.filter(c => c.scope === 'health-package');
@@ -276,9 +291,9 @@ const seed = async () => {
 
   // ── Insurance Plans ──
   const insurance = [
-    { provider: 'Axis Max Life', name: 'Smart Term Plan Plus', description: 'Comprehensive term insurance with flexible coverage and tax benefits.', coverage: 5000000, premium: 12659, recommended: true, tenure: '85 Years' },
-    { provider: 'HDFC Life', name: 'Click 2 Protect', description: 'Affordable life insurance with critical illness rider.', coverage: 3000000, premium: 8999, tenure: '30 Years' },
-    { provider: 'ICICI Prudential', name: 'iProtect Smart', description: 'Flexible term plan with increasing cover option.', coverage: 10000000, premium: 15999, recommended: true, tenure: '40 Years' },
+    { provider: 'Axis Max Life Insurance', name: 'Smart Term Plan Plus', description: 'Axis Max Life Smart Term Plan Plus is a comprehensive term insurance plan that offers pure risk protection to the family of the life assured in case of any eventuality.', coverage: 5000000, premium: 12659, recommended: true, tenure: '85 Year', sortOrder: 1, sumInsured: 5000000, cashlessHospitals: '5000+', subLimits: 'As per policy', noClaimBonus: 'Up to 50%', waitingPeriod: '90 days', claimSettlementRatio: '99%', coPayment: '0%' },
+    { provider: 'HDFC ERGO', name: 'Optima Select Health Insurance Plan', description: 'Comprehensive health insurance with cashless hospitalization and wide network coverage.', coverage: 500000, premium: 18500, recommended: false, tenure: '1 Year', sortOrder: 2, sumInsured: 500000, cashlessHospitals: '12000+', claimSettlementRatio: '96%' },
+    { provider: 'ICICI Prudential', name: 'iProtect Smart', description: 'Flexible term plan with increasing cover option and affordable premiums.', coverage: 10000000, premium: 15999, recommended: true, tenure: '40 Years', sortOrder: 3, sumInsured: 10000000, claimSettlementRatio: '98%' },
   ];
   for (const i of insurance) await InsurancePlan.findOneAndUpdate({ name: i.name, provider: i.provider }, i, { upsert: true });
   console.log('✓ Insurance plans seeded');

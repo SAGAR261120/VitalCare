@@ -8,8 +8,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { APP_NAME } from '../constants';
 import { Text } from '../components/common/Text';
 import { MembershipScreen } from '../screens/services/MembershipScreen';
-import { InsuranceScreen } from '../screens/services/InsuranceScreen';
+import { InsuranceNavigator } from './InsuranceNavigator';
 import { HealthPackagesNavigator } from './HealthPackagesNavigator';
+import { CycleNavigator } from './CycleNavigator';
 import { useAuthStore } from '../store/authStore';
 import { useTheme } from '../theme';
 import { DrawerParamList } from '../types';
@@ -28,13 +29,11 @@ const MembershipWithFab = () => (
   </MainShell>
 );
 
-const InsuranceWithFab = () => (
-  <MainShell hasTabBar={false}>
-    <InsuranceScreen />
-  </MainShell>
-);
+const InsuranceWithFab = () => <InsuranceNavigator />;
 
 const HealthPackagesWithFab = () => <HealthPackagesNavigator />;
+
+const CycleWithFab = () => <CycleNavigator />;
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -49,6 +48,7 @@ const DRAWER_SECTIONS = [
       { icon: 'medkit-outline', label: 'Health Packages', route: 'HealthPackages' },
       { icon: 'shield-checkmark-outline', label: 'Membership Plans', route: 'Membership' },
       { icon: 'umbrella-outline', label: 'Insurance', route: 'Insurance' },
+      { icon: 'flower-outline', label: 'Period & Pregnancy', route: 'Cycle' },
       { icon: 'fitness-outline', label: 'Yoga Sessions', route: 'MainTabs' },
       { icon: 'water-outline', label: 'Blood Donation', route: 'MainTabs' },
     ],
@@ -164,6 +164,7 @@ export const DrawerNavigator: React.FC = () => {
       <Drawer.Screen name="HealthPackages" component={HealthPackagesWithFab} />
       <Drawer.Screen name="Membership" component={MembershipWithFab} />
       <Drawer.Screen name="Insurance" component={InsuranceWithFab} />
+      <Drawer.Screen name="Cycle" component={CycleWithFab} />
     </Drawer.Navigator>
   );
 };

@@ -11,7 +11,7 @@ export const BannersPage = () => (
       { key: 'title', label: 'Title' },
       { key: 'subtitle', label: 'Subtitle' },
       { key: 'image', label: 'Banner Image', type: 'image' },
-      { key: 'placement', label: 'Placement (home/promo/onboarding)' },
+      { key: 'placement', label: 'Placement (home/promo/onboarding/insurance/cycle)' },
       { key: 'sortOrder', label: 'Sort Order', type: 'number' },
       { key: 'isActive', label: 'Active', type: 'boolean' },
     ]} />
@@ -41,17 +41,7 @@ export const MembershipPlansPage = () => (
     ]} />
 );
 
-export const InsurancePlansPage = () => (
-  <ContentManagePage title="Insurance Plans" resource="insurance-plans"
-    columns={[{ key: 'provider', label: 'Provider' }, { key: 'name', label: 'Plan' }, { key: 'premium', label: 'Premium' }]}
-    fields={[
-      { key: 'provider', label: 'Provider' }, { key: 'name', label: 'Plan Name' },
-      { key: 'description', label: 'Description', multiline: true },
-      { key: 'coverage', label: 'Coverage', type: 'number' }, { key: 'premium', label: 'Premium', type: 'number' },
-      { key: 'tenure', label: 'Tenure' }, { key: 'recommended', label: 'Recommended', type: 'boolean' },
-      { key: 'isActive', label: 'Active', type: 'boolean' },
-    ]} />
-);
+export { InsurancePlansManagePage as InsurancePlansPage } from '../InsurancePlansManagePage';
 
 export const CategoriesPage = () => (
   <ContentManagePage title="Categories" resource="categories"
@@ -71,6 +61,17 @@ export const OnboardingPage = () => (
     fields={[
       { key: 'title', label: 'Title' }, { key: 'subtitle', label: 'Subtitle', multiline: true },
       { key: 'icon', label: 'Icon Name' }, { key: 'sortOrder', label: 'Sort Order', type: 'number' },
+      { key: 'isActive', label: 'Active', type: 'boolean' },
+    ]} />
+);
+
+export const CycleWellnessTipsPage = () => (
+  <ContentManagePage title="Cycle Wellness Tips" resource="cycle-wellness-tips"
+    columns={[{ key: 'title', label: 'Title' }, { key: 'message', label: 'Message' }]}
+    fields={[
+      { key: 'title', label: 'Title' },
+      { key: 'message', label: 'Tip Message', multiline: true },
+      { key: 'sortOrder', label: 'Sort Order', type: 'number' },
       { key: 'isActive', label: 'Active', type: 'boolean' },
     ]} />
 );

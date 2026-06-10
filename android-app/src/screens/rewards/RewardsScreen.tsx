@@ -56,7 +56,7 @@ export const RewardsScreen: React.FC = () => {
 
       <Animated.View entering={FadeInDown.duration(400)}>
         <LinearGradient
-          colors={[theme.colors.gradientStart, theme.colors.gradientEnd]}
+          colors={[theme.colors.heroGradientStart, theme.colors.heroGradientEnd]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.pointsCard, theme.shadows.lg]}>

@@ -103,4 +103,32 @@ const rewardService = {
   },
 };
 
-module.exports = { appointmentService, rewardService };
+const InsuranceSubmission = require('../models/InsuranceSubmission');
+
+const insuranceSubmissionService = {
+  listForUser: async (userId, opts = {}) => {
+    const query = { user: userId };
+    if (opts.type) query.type = opts.type;
+    const items = await InsuranceSubmission.find(query)
+      .sort('-createdAt')
+      .limit(50);
+    return { items };
+  },
+
+  submit: async (userId, data) => {
+    if (!data.type || !['requirement', 'upload'].includes(data.type)) {
+      throw new AppError('Invalid submission type', 400);
+    }
+    if (data.type === 'requirement') {
+      if (!data.insuranceCompany || !data.mobileNumber) {
+        throw new AppError('Insurance company and mobile number are required', 400);
+      }
+    }
+    if (data.type === 'upload' && !data.documentUrl && !data.policyName) {
+      throw new AppError('Policy name or document is required', 400);
+    }
+    return InsuranceSubmission.create({ ...data, user: userId, status: 'pending' });
+  },
+};
+
+module.exports = { appointmentService, rewardService, insuranceSubmissionService };

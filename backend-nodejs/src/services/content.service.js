@@ -11,6 +11,7 @@ const ContentPage = require('../models/ContentPage');
 const MenuItem = require('../models/MenuItem');
 const City = require('../models/City');
 const Reward = require('../models/Reward');
+const CycleWellnessTip = require('../models/CycleWellnessTip');
 const createCrudService = require('../utils/crudFactory');
 
 const MODEL_MAP = {
@@ -32,6 +33,7 @@ const MODEL_MAP = {
   'menu-items': { Model: MenuItem, searchFields: ['label'], public: true },
   cities: { Model: City, searchFields: ['name', 'state', 'district'], public: true },
   rewards: { Model: Reward, searchFields: ['title'], public: true },
+  'cycle-wellness-tips': { Model: CycleWellnessTip, searchFields: ['title', 'message'], public: true },
 };
 
 const getService = resource => {

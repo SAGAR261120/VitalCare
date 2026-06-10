@@ -153,7 +153,9 @@ export const api = {
     getPackageCategories: () =>
       apiClient.get('/content/categories', { params: { scope: 'health-package', limit: 20 } }),
     getMembershipPlans: () => apiClient.get('/content/membership-plans'),
-    getInsurancePlans: () => apiClient.get('/content/insurance-plans'),
+    getInsurancePlans: (params?: Record<string, unknown>) =>
+      apiClient.get('/content/insurance-plans', { params }),
+    getInsurancePlan: (id: string) => apiClient.get(`/content/insurance-plans/${id}`),
     getCities: (search?: string) => apiClient.get('/content/cities', { params: { search, limit: 20 } }),
     getRewards: () => apiClient.get('/content/rewards'),
     getPage: (slug: string) => apiClient.get(`/content/pages/slug/${slug}`),
@@ -167,6 +169,21 @@ export const api = {
     get: () => apiClient.get('/content/rewards'),
     withdraw: (points: number) => apiClient.post('/content/rewards/withdraw', { points }),
     connectWallet: (address: string) => apiClient.post('/content/rewards/wallet', { address }),
+  },
+  cycle: {
+    getDashboard: () => apiClient.get('/content/cycle/dashboard'),
+    getProfile: () => apiClient.get('/content/cycle/profile'),
+    updateProfile: (data: Record<string, unknown>) => apiClient.put('/content/cycle/profile', data),
+    getLogs: (params?: Record<string, unknown>) => apiClient.get('/content/cycle/logs', { params }),
+    createLog: (data: Record<string, unknown>) => apiClient.post('/content/cycle/logs', data),
+    updateLog: (id: string, data: Record<string, unknown>) => apiClient.put(`/content/cycle/logs/${id}`, data),
+    deleteLog: (id: string) => apiClient.delete(`/content/cycle/logs/${id}`),
+  },
+  insurance: {
+    getSubmissions: (type?: string) =>
+      apiClient.get('/content/insurance-submissions', { params: { type } }),
+    submitRequirement: (data: Record<string, unknown>) =>
+      apiClient.post('/content/insurance-submissions', data),
   },
   activity: {
     list: (type?: string, page = 1) => apiClient.get('/content/activity', { params: { type, page } }),

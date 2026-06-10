@@ -14,7 +14,7 @@ router.use(protect, restrictTo('admin', 'super_admin'));
 const RESOURCES = [
   'categories', 'subcategories', 'banners', 'health-packages', 'specialists',
   'membership-plans', 'insurance-plans', 'onboarding-slides', 'faqs', 'pages',
-  'menu-items', 'cities', 'rewards',
+  'menu-items', 'cities', 'rewards', 'cycle-wellness-tips',
 ];
 
 const RESOURCE_VALIDATION = {
@@ -46,6 +46,32 @@ router.post('/media/upload', requirePermission('media.manage', 'content.write'),
   const url = `/uploads/${req.file.filename}`;
   res.json({ success: true, data: { url, filename: req.file.filename, mimetype: req.file.mimetype } });
 });
+
+const InsuranceSubmission = require('../models/InsuranceSubmission');
+
+router.get('/insurance-submissions', requirePermission('content.read'), asyncHandler(async (req, res) => {
+  const page = +req.query.page || 1;
+  const limit = Math.min(50, +req.query.limit || 20);
+  const skip = (page - 1) * limit;
+  const query = {};
+  if (req.query.type) query.type = req.query.type;
+  if (req.query.status) query.status = req.query.status;
+  const [items, total] = await Promise.all([
+    InsuranceSubmission.find(query).populate('user', 'firstName lastName email phone').sort('-createdAt').skip(skip).limit(limit),
+    InsuranceSubmission.countDocuments(query),
+  ]);
+  res.json({ success: true, data: { items, pagination: { page, limit, total, pages: Math.ceil(total / limit) } } });
+}));
+
+router.patch('/insurance-submissions/:id', requirePermission('content.write'), asyncHandler(async (req, res) => {
+  const item = await InsuranceSubmission.findByIdAndUpdate(
+    req.params.id,
+    { status: req.body.status, notes: req.body.notes },
+    { new: true },
+  );
+  if (!item) return res.status(404).json({ success: false, message: 'Submission not found' });
+  res.json({ success: true, data: item });
+}));
 
 router.delete('/media/:filename', requirePermission('media.manage'), asyncHandler(async (req, res) => {
   const fs = require('fs');

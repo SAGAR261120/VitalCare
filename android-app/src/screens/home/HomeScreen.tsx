@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
-import { ImageBackground, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ImageBackground, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { HealthPackageCard } from '../../components/cards/HealthPackageCard';
+import { InsuranceHomeCard } from '../../components/cards/InsuranceHomeCard';
 import { SpecialistCard } from '../../components/cards/SpecialistCard';
+import { PeriodPregnancyHomeBanner } from '../../components/cycle/PeriodPregnancyHomeBanner';
 import { ErrorState } from '../../components/common/ErrorState';
 import { EmptyState } from '../../components/common/EmptyState';
 import { HomeScreenSkeleton } from '../../components/common/HomeScreenSkeleton';
@@ -34,6 +36,7 @@ export const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation<any>();
   const user = useAuthStore(state => state.user);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const { location, searchQuery, setSearchQuery, fetchLocation, setAppSettings } = useAppStore();
   const { data, loading, refreshing, error, refetch } = useHomeFeed();
 
@@ -49,14 +52,14 @@ export const HomeScreen: React.FC = () => {
 
   const banner = data?.banners?.[0];
   const packages = data?.packages ?? [];
+  const insurancePlans = data?.insurance ?? [];
+  const cycleBanner = data?.cycleBanner;
   const specialists = data?.specialists ?? [];
   const appName = (data?.settings?.app_name as string) || 'VitalCare';
 
   const bannerImageUrl = resolveMediaUrl(banner?.image);
-  const bannerGradient =
-    banner?.gradient?.length === 2
-      ? banner.gradient
-      : [theme.colors.heroGradientStart, theme.colors.heroGradientEnd];
+  /** Rich violet→sky gradient (same as insurance banner) when no banner image */
+  const heroGradient = [theme.colors.heroGradientStart, theme.colors.heroGradientEnd];
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
@@ -155,7 +158,7 @@ export const HomeScreen: React.FC = () => {
             </ImageBackground>
           ) : (
             <LinearGradient
-              colors={bannerGradient}
+              colors={heroGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[styles.heroBanner, styles.heroOverlay, theme.shadows.md]}>
@@ -189,6 +192,49 @@ export const HomeScreen: React.FC = () => {
           ))}
         </ScrollView>
       )}
+
+      <SectionHeader title="Insurance Plans" actionLabel="View All" onAction={() => navigation.navigate('Insurance')} />
+      {insurancePlans.length === 0 ? (
+        <EmptyState
+          title="No insurance plans yet"
+          description="Insurance plans will appear here once available."
+          icon="shield-outline"
+        />
+      ) : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} nestedScrollEnabled contentContainerStyle={styles.horizontalList}>
+          {insurancePlans.map((item, index) => (
+            <InsuranceHomeCard
+              key={item._id}
+              plan={{ ...item, id: item._id }}
+              index={index}
+              onPress={() =>
+                navigation.navigate('Insurance', {
+                  screen: 'InsuranceDetail',
+                  params: { planId: item._id },
+                })
+              }
+            />
+          ))}
+        </ScrollView>
+      )}
+
+      <SectionHeader
+        title="Period & Pregnancy"
+        actionLabel="Open Tracker"
+        onAction={() => {
+          if (!isAuthenticated) {
+            Alert.alert('Sign in required', 'Please log in to use the cycle tracker.');
+            return;
+          }
+          navigation.navigate('Cycle');
+        }}
+      />
+      <PeriodPregnancyHomeBanner
+        title={cycleBanner?.title}
+        subtitle={cycleBanner?.subtitle}
+        image={cycleBanner?.image}
+        gradient={cycleBanner?.gradient}
+      />
 
       <SectionHeader title="Care Team" actionLabel="See All" onAction={() => navigation.navigate('SearchTab')} />
       {specialists.length === 0 ? (
